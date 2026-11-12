@@ -243,6 +243,7 @@ Si la IA propone un cambio importante, pídele que también actualice la documen
 | `docs/MANTENIMIENTO.md` | Esta guía. |
 | `docs/ROADMAP.md` | Plan por fases/subfases, estados y próximo paso. |
 | `docs/ACCESIBILIDAD.md` | Matriz axe, contraste, teclado, capturas y límites de la Fase 1. |
+| `docs/ONBOARDING.md` | Guía de primera ejecución, credenciales oficiales, recuperación y logs. |
 | `docs/UPSTREAM.md` | Cómo se investigó y actualiza el motor oficial. |
 | `docs/TESTING.md` | Qué pruebas existen y cómo ejecutarlas. |
 | `docs/SECURITY.md` | Modelo de seguridad y overrides. |

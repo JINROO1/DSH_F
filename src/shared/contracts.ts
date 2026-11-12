@@ -19,6 +19,7 @@ export const settingsSchema = z.object({
   confirmQuit: z.boolean().default(true),
   launchOnLogin: z.boolean().default(false),
   reduceMotion: z.boolean().default(false),
+  onboardingDismissed: z.boolean().default(false),
 }).strict()
 export type Settings = z.infer<typeof settingsSchema>
 export const DEFAULT_SETTINGS: Settings = settingsSchema.parse({})
@@ -29,6 +30,7 @@ export const settingsPatchSchema = z.object({
   confirmQuit: z.boolean().optional(),
   launchOnLogin: z.boolean().optional(),
   reduceMotion: z.boolean().optional(),
+  onboardingDismissed: z.boolean().optional(),
 }).strict()
 export type SettingsPatch = z.infer<typeof settingsPatchSchema>
 

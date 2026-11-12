@@ -48,6 +48,14 @@ describe('DesktopStore', () => {
     await expect(store.updateSettings({ closeToTray: 'yes' })).rejects.toThrow()
     expect(store.snapshot().settings).toEqual(DEFAULT_SETTINGS)
   })
+  it('persiste la guía de inicio como preferencia no sensible y permite reabrirla', async () => {
+    const store = new DesktopStore(join(dir, 'desktop.json'))
+    expect((await store.load()).settings.onboardingDismissed).toBe(false)
+    expect((await store.updateSettings({ onboardingDismissed: true })).settings.onboardingDismissed).toBe(true)
+    const reloaded = new DesktopStore(join(dir, 'desktop.json'))
+    expect((await reloaded.load()).settings.onboardingDismissed).toBe(true)
+    expect((await reloaded.updateSettings({ onboardingDismissed: false })).settings.onboardingDismissed).toBe(false)
+  })
   it('recovers corrupted primary files from backup and preserves evidence', async () => {
     const path = join(dir, 'desktop.json')
     await writeFile(path, '{roto')

@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
   // La vista previa conserva preferencias entre ejecuciones; cada test parte de
   // un estado determinista para no heredar un tema claro de un run anterior.
   const reset = await page.request.post('/__desktop/command', {
-    data: { channel: 'settings:set', payload: { theme: 'dark', language: 'es', reduceMotion: false } },
+    data: { channel: 'settings:set', payload: { theme: 'dark', language: 'es', reduceMotion: false, onboardingDismissed: false } },
   })
   expect(reset.ok()).toBeTruthy()
   await page.goto('/')
@@ -129,7 +129,7 @@ test('diagnóstico redactado y exportación descargable', async ({ page }) => {
   await expect(page.getByRole('heading', { name: 'Diagnóstico', exact: true })).toBeVisible()
   await expect(page.getByLabel('Registro local')).not.toContainText(/token=[A-Za-z0-9_-]{43}/)
   const download = page.waitForEvent('download')
-  await page.getByRole('button', { name: 'Exportar diagnóstico' }).click()
+  await page.getByRole('button', { name: 'Exportar diagnóstico' }).first().click()
   const file = await download
   expect(file.suggestedFilename()).toBe('dsh-fedora-diagnostico.txt')
   const path = await file.path()

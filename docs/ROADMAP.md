@@ -34,7 +34,7 @@ Tamaños orientativos: **S** = cambio localizado, **M** = varios archivos/prueba
 |---|---|---|---|---|
 | 0 | Plan, mantenimiento y trazabilidad | Alta | Hecho | — |
 | 1 | Accesibilidad y confianza visual | Alta | En curso: automatización completa, 1.8 manual bloqueada | 0 |
-| 2 | Onboarding y diagnóstico amigable | Alta | Pendiente | 1 |
+| 2 | Onboarding y diagnóstico amigable | Alta | Hecho | 1 |
 | 3 | Actualizaciones manuales asistidas | Alta | Pendiente | 1; flujo upstream existente |
 | 4 | Fedora/KDE y distribución profesional | Media/alta | Pendiente | 1–3; hardware Fedora |
 | 5 | Seguridad y cadena de suministro | Media/alta | Pendiente | 3–4 para distribución firmada |
@@ -84,14 +84,14 @@ Riesgos y mitigación:
 
 Objetivo: que un usuario nuevo entienda el primer uso y pueda recuperarse de errores sin leer código.
 
-| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño |
-|---|---|---|---|---|
-| 2.1 | Primera ejecución | Tarjeta/guía descartable: motor, proyecto, modelo y permisos | Se puede descartar y reabrir; no bloquea usuarios existentes; preferencia persistida | M |
-| 2.2 | Credenciales oficiales | Explicar y enlazar el flujo oficial de cuenta/API key | La shell no pide ni almacena API keys; no se inventan endpoints de login | S |
-| 2.3 | Permisos comprensibles | Explicar workspace-write y límites antes de abrir/ejecutar | Texto claro es/en; no promete aislamiento que el motor no ofrece | S |
-| 2.4 | Estado y errores del motor | Mostrar fase, último error, attempts y acciones de recuperación | Mensajes accionables; reinicio no pierde datos; errores no contienen secretos | M |
-| 2.5 | Logs utilizables | Filtro por texto/nivel, copia segura y vacío/explicación de errores | Copia/exportación siguen redactadas; filtro no altera el archivo; teclado accesible | M |
-| 2.6 | Pruebas de recuperación | Simular motor ausente, fallo de arranque, reinicio y exportación | Tests unitarios/E2E cubren éxito/error; no se requieren credenciales reales | M |
+| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño | Estado |
+|---|---|---|---|---|---|
+| 2.1 | Primera ejecución | Tarjeta/guía descartable: motor, proyecto, modelo y permisos | Se puede descartar y reabrir; no bloquea usuarios existentes; preferencia persistida | M | Hecho |
+| 2.2 | Credenciales oficiales | Explicar y enlazar el flujo oficial de cuenta/API key | La shell no pide ni almacena API keys; no se inventan endpoints de login | S | Hecho |
+| 2.3 | Permisos comprensibles | Explicar workspace-write y límites antes de abrir/ejecutar | Texto claro es/en; no promete aislamiento que el motor no ofrece | S | Hecho |
+| 2.4 | Estado y errores del motor | Mostrar fase, último error, attempts y acciones de recuperación | Mensajes accionables; reinicio no pierde datos; errores no contienen secretos | M | Hecho |
+| 2.5 | Logs utilizables | Filtro por texto/nivel, copia segura y vacío/explicación de errores | Copia/exportación siguen redactadas; filtro no altera el archivo; teclado accesible | M | Hecho |
+| 2.6 | Pruebas de recuperación | Simular motor ausente, fallo de arranque, reinicio y exportación | Tests unitarios/E2E cubren éxito/error; no se requieren credenciales reales | M | Hecho |
 
 Dependencias: Fase 1 para que los nuevos componentes nazcan accesibles. No depende de una actualización upstream.
 
@@ -174,7 +174,8 @@ Objetivo: que otra persona pueda contribuir sin depender del mantenedor original
 | 2026-11-12 | 0 | Plan por fases/subfases y guía enlazada | `docs/ROADMAP.md`, `docs/MANTENIMIENTO.md` |
 | 2026-11-12 | 1.1 | Línea base axe en claro/oscuro | `docs/ACCESIBILIDAD.md` y `docs/accessibility/baseline-2026-11-12.json`: 6 violaciones de contraste en vistas claras, 1 en paleta clara; oscuro sin violaciones en la matriz inicial |
 | 2026-11-12 | 1.2–1.7 | Paleta clara accesible, semántica/foco, matriz axe, capturas y cualificación | `docs/ACCESIBILIDAD.md`: 12/12 axe, 20 tests de contraste, 90/90 unitarias, 3/3 integración, 22/22 E2E, auditoría 0+0; `qualify:runtime` 23:07:59 UTC |
+| 2026-11-12 | 2 | Onboarding descartable, credenciales/permisos, recuperación y logs filtrables | `docs/ONBOARDING.md`; typecheck/cobertura/build/integración verdes, 92/92 unitarias, 24/24 E2E |
 
 ## Próximo paso inmediato
 
-La puerta automatizada de la Fase 1 (1.2–1.7) está cerrada. Siguiente trabajo recomendado: **Fase 2.1, primera ejecución**, en un cambio pequeño y independiente. La subfase 1.8 permanece bloqueada hasta disponer de Fedora/Plasma real; no marcar la Fase 1 como conformidad total ni comenzar actualizaciones upstream/mezclar packaging en el mismo cambio.
+Continuar con **Fase 3, actualizaciones manuales asistidas**. Mantener 1.8 bloqueada hasta Fedora/Plasma real; no mezclar una actualización real del motor con estos cambios ni publicar releases sin CI verde.

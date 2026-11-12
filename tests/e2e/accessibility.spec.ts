@@ -5,7 +5,7 @@ import AxeBuilder from '@axe-core/playwright'
 // excluded as a separate product surface; no accessibility rule is disabled.
 test.beforeEach(async ({ page }) => {
   const reset = await page.request.post('/__desktop/command', {
-    data: { channel: 'settings:set', payload: { theme: 'dark', language: 'es', reduceMotion: false } },
+    data: { channel: 'settings:set', payload: { theme: 'dark', language: 'es', reduceMotion: false, onboardingDismissed: false } },
   })
   expect(reset.ok()).toBeTruthy()
   await page.goto('/')

@@ -1,0 +1,34 @@
+/* Fedora Edition: presentation-only overrides of the documented Harness design tokens.
+   No upstream package or agent behavior is modified. Both palettes retain semantic colors. */
+body {
+  --dsh-font-family-text: 'Inter Variable', 'Noto Sans', 'Segoe UI';
+  --dsw-alias-bg-base: #f7f8fb;
+  --dsw-alias-bg-layer-1: #ffffff;
+  --dsw-alias-bg-layer-2: #f0f3f9;
+  --dsw-alias-bg-layer-3: #e5eaf3;
+  --dsw-alias-border-l1: rgba(24, 39, 75, .07);
+  --dsw-alias-border-l2: rgba(24, 39, 75, .12);
+  --dsw-alias-state-business-primary: #386bd8;
+  --dsw-alias-state-business-tertiary: #e7eefc;
+  --dsw-alias-link: #386bd8;
+  --dsw-specific-sidebar-fill: #f0f3f9;
+  --dsw-specific-sidebar-nav-item-active: #e1e9f9;
+  --dsw-specific-sidebar-nav-item-active-accent: #d5e2fb;
+  --dsw-radius-md: 10px;
+  --dsw-radius-lg: 14px;
+}
+body[data-ds-dark-theme] {
+  --dsw-alias-bg-base: #14171d;
+  --dsw-alias-bg-layer-1: #1b1f27;
+  --dsw-alias-bg-layer-2: #222732;
+  --dsw-alias-bg-layer-3: #2b3240;
+  --dsw-alias-border-l1: rgba(255, 255, 255, .055);
+  --dsw-alias-border-l2: rgba(255, 255, 255, .10);
+  --dsw-alias-state-business-primary: #85afff;
+  --dsw-alias-state-business-tertiary: #233451;
+  --dsw-alias-link: #91b7ff;
+  --dsw-specific-sidebar-fill: #101318;
+  --dsw-specific-sidebar-nav-item-active: #222c3e;
+  --dsw-specific-sidebar-nav-item-active-accent: #2a3c5c;
+}
+body[data-ds-dark-theme] ::selection { background: #34558a; }

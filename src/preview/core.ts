@@ -1,0 +1,5 @@
+export { HarnessRuntime } from '../main/runtime.js'
+export { DesktopStore } from '../main/settings.js'
+export { DiagnosticLog } from '../main/log.js'
+export { collectDiagnostics, diagnosticsText } from '../main/diagnostics.js'
+export * from '../shared/contracts.js'

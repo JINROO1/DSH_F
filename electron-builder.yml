@@ -1,0 +1,69 @@
+appId: io.github.jinroo1.dshfedora
+productName: DeepSeek Harness Fedora
+copyright: Copyright © 2026 DSH_F contributors
+artifactName: dsh-fedora-${version}-x86_64.${ext}
+directories:
+  output: release
+  buildResources: assets
+asar: true
+files:
+  - dist/**/*
+  - package.json
+  - LICENSE
+  - THIRD_PARTY_NOTICES.md
+extraResources:
+  - from: .packaging/runtime
+    to: runtime
+    filter:
+      - '**/*'
+  - from: docs/UPSTREAM.md
+    to: UPSTREAM.md
+linux:
+  category: Development
+  synopsis: DeepSeek Harness para Fedora KDE Plasma
+  description: Edición comunitaria de escritorio con motor oficial, interfaz en español y proceso local aislado.
+  icon: assets/icon.png
+  desktop:
+    entry:
+      Name: DeepSeek Harness
+      GenericName: Espacio de trabajo de agentes
+      Comment: Tu agente, tus proyectos y tus herramientas
+      Keywords: ai;agent;code;deepseek;development;
+      StartupWMClass: dsh-fedora
+      X-KDE-StartupNotify: true
+rpm:
+  depends:
+    - nss
+    - nspr
+    - atk
+    - at-spi2-atk
+    - cups-libs
+    - libdrm
+    - mesa-libgbm
+    - alsa-lib
+    - gtk3
+    - libXScrnSaver
+    - libnotify
+    - libxkbcommon
+    - libXcomposite
+    - libXdamage
+    - libXrandr
+    - libXfixes
+    - libXext
+    - libX11
+    - libxcb
+    - expat
+    - glib2
+    - dbus-libs
+    - pango
+    - cairo
+    - mesa-libEGL
+    - libglvnd-opengl
+    - libuuid
+  fpm:
+    - '--rpm-compression=xz'
+    - '--rpm-os=linux'
+    - '--license=MIT'
+    - '--vendor=DSH_F contributors'
+    - '--url=https://github.com/JINROO1/DSH_F'
+publish: null

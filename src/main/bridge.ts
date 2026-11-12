@@ -1,5 +1,7 @@
 import { createServer, request as httpRequest, type IncomingMessage, type ServerResponse, type Server } from 'node:http'
 import { connect as netConnect, type AddressInfo } from 'node:net'
+import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import { randomBytes } from 'node:crypto'
 import { pipeline } from 'node:stream/promises'
 import { Readable } from 'node:stream'
@@ -14,9 +16,12 @@ export interface BridgeOptions {
   cookie: string
   appOrigins: readonly string[]
   themeCss: string
+  /** Directory containing the bundled Inter woff2 files served to the themed iframe. */
+  fontRoot?: string
   /** Inject the presentation-only stylesheet into the owned Harness document. */
   decorateHtml?: boolean
 }
+const FONT_FILES = new Set(['inter-latin-wght-normal.woff2', 'inter-latin-ext-wght-normal.woff2'])
 
 /** Loopback-only authenticated bridge. Upstream credentials never enter a renderer or a URL. */
 export class HarnessBridge {
@@ -102,6 +107,16 @@ export class HarnessBridge {
     if (url.pathname === '/__dshf/harness.css') {
       res.writeHead(200, { 'content-type': 'text/css; charset=utf-8', 'cache-control': 'no-store' })
       res.end(req.method === 'HEAD' ? undefined : this.options.themeCss); return
+    }
+    if (url.pathname.startsWith('/__dshf/fonts/')) {
+      const name = url.pathname.slice('/__dshf/fonts/'.length)
+      if (!this.options.fontRoot || !FONT_FILES.has(name)) { res.writeHead(404); res.end(); return }
+      try {
+        const font = await readFile(join(this.options.fontRoot, name))
+        res.writeHead(200, { 'content-type': 'font/woff2', 'cache-control': 'no-store' })
+        res.end(req.method === 'HEAD' ? undefined : font)
+      } catch { res.writeHead(404); res.end() }
+      return
     }
     const target = new URL(url.pathname + url.search, this.upstream)
     const headers = new Headers()

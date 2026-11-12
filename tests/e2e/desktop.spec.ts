@@ -2,6 +2,12 @@ import { expect, test } from '@playwright/test'
 import AxeBuilder from '@axe-core/playwright'
 
 test.beforeEach(async ({ page }) => {
+  // La vista previa conserva preferencias entre ejecuciones; cada test parte de
+  // un estado determinista para no heredar un tema claro de un run anterior.
+  const reset = await page.request.post('/__desktop/command', {
+    data: { channel: 'settings:set', payload: { theme: 'dark', language: 'es', reduceMotion: false } },
+  })
+  expect(reset.ok()).toBeTruthy()
   await page.goto('/')
   await expect(page.getByRole('heading', { name: /Construye algo/ })).toBeVisible()
   await expect(page.locator('.app-shell')).not.toHaveClass(/loading/)
@@ -66,6 +72,56 @@ test('abre un proyecto de demostración y carga Harness en el marco integrado', 
   await page.getByRole('textbox', { name: 'Filtrar proyectos…' }).fill('proyecto-demo')
   await page.getByRole('button', { name: /Quitar de recientes: proyecto-demo/ }).click()
   await expect(page.getByText('Proyecto quitado de recientes')).toBeVisible()
+})
+
+test('el agente comparte la paleta exacta de la aplicación en oscuro y claro', async ({ page }) => {
+  async function expectSharedPalette() {
+    const frame = page.frameLocator('iframe[title="Agente"], iframe[title="Agent"]')
+    await expect(frame.locator('body')).toBeVisible({ timeout: 60_000 })
+    await expect.poll(async () => frame.locator('body').evaluate(body => {
+      const style = getComputedStyle(body)
+      return style.getPropertyValue('--dsw-alias-bg-base').trim()
+    }), { timeout: 30_000 }).not.toBe('')
+    const shell = await page.evaluate(() => {
+      const style = getComputedStyle(document.documentElement)
+      return {
+        bg: style.getPropertyValue('--bg').trim(),
+        surface: style.getPropertyValue('--surface').trim(),
+        text: style.getPropertyValue('--text').trim(),
+        sidebar: style.getPropertyValue('--sidebar').trim(),
+        bodyBackground: getComputedStyle(document.body).backgroundColor,
+      }
+    })
+    const agent = await frame.locator('body').evaluate(async body => {
+      await document.fonts.ready
+      const style = getComputedStyle(body)
+      return {
+        bg: style.getPropertyValue('--dsw-alias-bg-base').trim(),
+        surface: style.getPropertyValue('--dsw-alias-bg-layer-1').trim(),
+        text: style.getPropertyValue('--dsw-alias-label-primary').trim(),
+        sidebar: style.getPropertyValue('--dsw-specific-sidebar-fill').trim(),
+        bodyBackground: style.backgroundColor,
+        fontLoaded: document.fonts.check('14px "Inter Variable"'),
+        fontFamily: style.fontFamily,
+      }
+    })
+    expect(agent.bg).toBe(shell.bg)
+    expect(agent.surface).toBe(shell.surface)
+    expect(agent.text).toBe(shell.text)
+    expect(agent.sidebar).toBe(shell.sidebar)
+    expect(agent.bodyBackground).toBe(shell.bodyBackground)
+    expect(agent.fontLoaded).toBe(true)
+    expect(agent.fontFamily).toContain('Inter Variable')
+  }
+  await page.getByRole('button', { name: 'Agente', exact: true }).click()
+  await expectSharedPalette()
+  await page.getByRole('button', { name: 'Ajustes', exact: true }).first().click()
+  await page.getByRole('button', { name: 'Claro', exact: true }).click()
+  await expect(page.locator('html')).toHaveAttribute('data-theme', 'light')
+  await page.getByRole('button', { name: 'Agente', exact: true }).click()
+  await expectSharedPalette()
+  await page.getByRole('button', { name: 'Ajustes', exact: true }).first().click()
+  await page.getByRole('button', { name: 'Oscuro', exact: true }).click()
 })
 
 test('diagnóstico redactado y exportación descargable', async ({ page }) => {

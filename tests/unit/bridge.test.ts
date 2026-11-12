@@ -1,5 +1,5 @@
 import { createServer, type Server } from 'node:http'
-import { mkdtemp, rm } from 'node:fs/promises'
+import { mkdtemp, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { WebSocket, WebSocketServer } from 'ws'
@@ -104,6 +104,21 @@ describe('HarnessBridge', () => {
     expect(html).toContain('<body>Harness</body>')
     const css = await fetch(new URL('/__dshf/harness.css', owned.origin), { headers: { cookie: session } })
     expect(await css.text()).toBe('body{color:red}')
+  })
+  it('serves only bundled fonts to authenticated sessions', async () => {
+    await writeFile(join(dir, 'inter-latin-wght-normal.woff2'), Buffer.alloc(2048, 7))
+    const owned = await start({ fontRoot: dir })
+    const session = await bootstrap()
+    const font = await fetch(new URL('/__dshf/fonts/inter-latin-wght-normal.woff2', owned.origin), { headers: { cookie: session } })
+    expect(font.status).toBe(200)
+    expect(font.headers.get('content-type')).toBe('font/woff2')
+    expect((await font.arrayBuffer()).byteLength).toBe(2048)
+    const missing = await fetch(new URL('/__dshf/fonts/inter-latin-ext-wght-normal.woff2', owned.origin), { headers: { cookie: session } })
+    expect(missing.status).toBe(404); await missing.body?.cancel()
+    const traversal = await fetch(new URL('/__dshf/fonts/..%2Fpackage.json', owned.origin), { headers: { cookie: session } })
+    expect(traversal.status).toBe(404); await traversal.body?.cancel()
+    const denied = await fetch(new URL('/__dshf/fonts/inter-latin-wght-normal.woff2', owned.origin))
+    expect(denied.status).toBe(403); await denied.body?.cancel()
   })
   it('can disable decoration and prepends a link when head is absent', async () => {
     const owned = await start({ decorateHtml: false })

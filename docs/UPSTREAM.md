@@ -2,13 +2,23 @@
 
 Fecha de investigación: 2026-11-12.
 
+## Versión actual gestionada
+
+Este bloque lo actualiza `npm run upstream:prepare`. La fuente de verdad técnica es `runtime/upstream.json`, consumida por los contratos y el empaquetado.
+
+<!-- upstream:current -->
+- Versión preparada: `0.2.2-rc.2`
+- Node incluido: `24.22.3`
+- Commit de upstream: `ddac96760b6edf8fa0fe17cbdcf0b512f4c12b2c`
+<!-- /upstream:current -->
+
 ## Fuente oficial
 
 - Repositorio: https://github.com/deepseek-ai/deepseek-harness
 - Licencia: MIT.
 - Release estudiada: `dsh-v0.2.2-rc.2` (prerelease, sin assets binarios en la release consultada).
 - Commit del clon shallow de estudio: `ddac96760b6edf8fa0fe17cbdcf0b512f4c12b2c`.
-- Paquete npm fijado: `@deepseek-ai/dsh@0.2.2-rc.2`.
+- Paquete npm estudiado: `@deepseek-ai/dsh@0.2.2-rc.2`.
 - Node requerido por el motor: `>=24.9.0`. DSH_F incluye `node-linux-x64@24.22.3` para no depender del Node del sistema.
 
 ## Hallazgos relevantes
@@ -47,3 +57,29 @@ El árbol del motor se fija en `runtime/package-lock.json`. Se aplican overrides
 - `@modelcontextprotocol/client` → `2.3.1`
 
 `npm audit --omit=dev` queda en 0 vulnerabilidades en la raíz y en el runtime tras los overrides. Las pruebas de integración arrancan el motor real con estos overrides.
+
+## Actualizar a una nueva release oficial
+
+La actualización es deliberada: no hay auto-update silencioso del motor.
+
+```bash
+# 1. Preparar pin, lockfile, referencias y auditoría (no instala ni publica)
+npm run upstream:prepare -- --version 0.2.3 --commit <sha-de-40-caracteres>
+
+# 2. Instalar el árbol fijado y cualificarlo con el motor real
+npm --prefix runtime ci
+npm run qualify:runtime
+
+# 3. Revisión humana obligatoria antes de distribuir
+#    - overrides: ¿siguen haciendo falta o upstream ya los corrigió?
+#    - contratos: token de arranque, cookies, RPC, namespaces, WebSocket
+#    - tema: tokens CSS de Harness si cambiaron
+#    - Fedora/CI: smoke Electron, RPM e instalación limpia
+
+# 4. Empaquetar solo después de cualificar
+npm run package:fedora
+```
+
+`upstream:prepare` acepta `--node-version` si la nueva release exige otro Node, `--install` para instalar el runtime en el mismo paso y `--dry-run` para revisar el cambio sin escribir. Si no se proporciona `--commit`, deja el commit como pendiente y lo advierte: no lo inventa.
+
+`qualify:runtime` ejecuta auditoría + `npm run check` (incluye integración con el motor real y E2E) y escribe `.packaging/qualification.json` ligado al hash de `runtime/package.json`, `runtime/package-lock.json`, `runtime/upstream.json` y los CSS de tema. `package:runtime` rechaza empaquetar si falta esa cualificación, si falta el commit de upstream, o si cualquiera de esos archivos cambió después de cualificar.

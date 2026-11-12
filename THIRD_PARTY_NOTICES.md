@@ -5,14 +5,14 @@ DSH_F es una edición comunitaria de escritorio. No está afiliada ni respaldada
 ## DeepSeek Harness
 
 - Proyecto: https://github.com/deepseek-ai/deepseek-harness
-- Versión fijada: `0.2.2-rc.2`
+- Versión fijada: <!-- upstream:version -->`0.2.2-rc.2`<!-- /upstream:version -->
 - Licencia: MIT
 - El motor se distribuye sin modificar desde el paquete oficial `@deepseek-ai/dsh`.
 - Copyright (c) DeepSeek y contribuidores de DeepSeek Harness.
 
 ## Node.js
 
-- Runtime incluido: `node-linux-x64` 24.22.3
+- Runtime incluido: `node-linux-x64` <!-- upstream:node -->24.22.3<!-- /upstream:node -->
 - Licencia: MIT (Node.js); los componentes incluidos conservan sus propias licencias.
 - https://github.com/nodejs/node
 

@@ -32,6 +32,8 @@ function create() {
     log,
     startupTimeoutMs: 60_000,
     autoRestart: false,
+    themeCssPath: join(root, 'src/renderer/harness-theme.css'),
+    fontRoot: join(root, 'node_modules/@fontsource-variable/inter/files'),
   }, { ...DEFAULT_SETTINGS, theme: 'dark', language: 'es' })
   return runtime
 }
@@ -57,11 +59,20 @@ describe('official DeepSeek Harness runtime integration', () => {
     expect(body).toContain('/__dshf/harness.css')
     expect(body.toLowerCase()).toContain('harness')
     const css = await fetch(new URL('/__dshf/harness.css', origin), { headers: { cookie } })
-    expect(await css.text()).toContain('--dsw-alias-state-business-primary')
+    const themeCss = await css.text()
+    expect(themeCss).toContain('--dsw-alias-state-business-primary')
+    expect(themeCss).toContain('--dsw-alias-bg-base: #101318')
+    const font = await fetch(new URL('/__dshf/fonts/inter-latin-wght-normal.woff2', origin), { headers: { cookie } })
+    expect(font.status).toBe(200)
+    expect(font.headers.get('content-type')).toBe('font/woff2')
+    expect((await font.arrayBuffer()).byteLength).toBeGreaterThan(1000)
+    const traversal = await fetch(new URL('/__dshf/fonts/..%2F..%2Fpackage.json', origin), { headers: { cookie } })
+    expect(traversal.status).toBe(404)
+    await traversal.body?.cancel()
     const described = await engine.rpc('settings/describe', {}) as { namespaces: Array<{ ns: string; value: Record<string, unknown> }> }
     const locale = described.namespaces.find(entry => entry.ns === 'locale')
     const theme = described.namespaces.find(entry => entry.ns === 'ui-theme')
-    // La shell es española; upstream 0.2.2-rc.2 aún no publica locale es.
+    // La shell es española; la release cualificada aún no publica locale es.
     expect(locale?.value.preference).toBe('en')
     expect(theme?.value.preference).toBe('dark')
     const text = await log.read()

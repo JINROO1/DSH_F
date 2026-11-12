@@ -11,7 +11,7 @@
 <p align="center">
   Edición comunitaria de escritorio construida sobre el motor oficial de
   <a href="https://github.com/deepseek-ai/deepseek-harness">DeepSeek Harness</a>
-  <code>0.2.2-rc.2</code>. No afiliada ni respaldada por DeepSeek.
+  <!-- upstream:version --><code>0.2.2-rc.2</code><!-- /upstream:version -->. No afiliada ni respaldada por DeepSeek.
 </p>
 
 ---
@@ -21,9 +21,10 @@
 DSH_F transforma DeepSeek Harness en una aplicación de escritorio nativa para **Fedora Linux + KDE Plasma**. Conserva el motor de agentes oficial (plugins, sesiones, workspaces, credenciales locales) y añade una capa de escritorio robusta:
 
 - **Shell premium en español** con portada, proyectos recientes, paleta de comandos (`Ctrl+K`), ajustes y diagnóstico.
-- **Motor oficial aislado**: proceso hijo con Node 24 incluido, `DSH_HOME` propio y permisos iniciales `workspace-write`.
+- **Motor oficial aislado**: proceso hijo con su propio Node incluido, `DSH_HOME` propio y permisos iniciales `workspace-write`.
 - **Puente loopback autenticado**: el token de Harness nunca llega a la interfaz; cookie propia, tickets de un solo uso y proxy HTTP/WebSocket.
 - **Integración Plasma**: bandeja, cerrar a bandeja, confirmación de salida, autostart XDG, tema claro/oscuro/sistema y notificaciones.
+- **Tema unificado**: el agente oficial recibe la misma paleta y tipografía Inter que la shell, sin parchear el paquete upstream.
 - **Empaquetado RPM** con dependencias Fedora y CI que instala el RPM en `fedora:latest`.
 - **Privacidad por diseño**: sin telemetría de esta capa; logs redactados y rotados; preferencias atómicas `0600`.
 
@@ -39,6 +40,10 @@ DSH_F transforma DeepSeek Harness en una aplicación de escritorio nativa para *
 |---|---|
 | ![Ajustes](docs/screenshots/settings.png) | ![Diagnóstico](docs/screenshots/diagnostics.png) |
 
+El agente oficial hereda la misma paleta que la shell en ambos temas:
+
+![Agente en tema claro](docs/screenshots/agent-light.png)
+
 ## Instalación en Fedora
 
 ```bash
@@ -52,7 +57,7 @@ git clone https://github.com/JINROO1/DSH_F.git
 cd DSH_F
 npm ci
 npm --prefix runtime ci
-npm run check
+npm run qualify:runtime
 npm run package:fedora
 sudo dnf install -y release/dsh-fedora-0.1.0-x86_64.rpm
 ```
@@ -61,7 +66,7 @@ Guía completa: [docs/FEDORA.md](docs/FEDORA.md).
 
 ## Desarrollo
 
-Requisitos: Linux x64, Node ≥ 22.12 para la capa de escritorio, npm. El motor usa su propio Node 24 incluido.
+Requisitos: Linux x64, Node ≥ 22.12 para la capa de escritorio, npm. El motor usa su propio Node incluido; la versión exacta vive en `runtime/upstream.json`.
 
 ```bash
 npm run setup          # npm ci en raíz y runtime
@@ -84,7 +89,9 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 | `npm run test:electron` | Smoke nativo Electron (CI con Xvfb). |
 | `npm run check` | Typecheck + cobertura + build + integración + E2E. |
 | `npm run audit:dependencies` | `npm audit --omit=dev` en raíz y runtime. |
-| `npm run package:runtime` | Prepara runtime fuera de `app.asar` con manifiesto SHA-256. |
+| `npm run upstream:prepare` | Prepara una actualización del motor: pin, lockfile, referencias y auditoría. |
+| `npm run qualify:runtime` | Auditoría + `check` con motor real; requisito previo para empaquetar. |
+| `npm run package:runtime` | Prepara runtime fuera de `app.asar` con manifiesto SHA-256 y cualificación vigente. |
 | `npm run package:fedora` | RPM x64 con electron-builder. |
 | `npm run source:archive` | Tarball fuente limpio para distribución. |
 
@@ -116,9 +123,9 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 
 | Área | Estado |
 |---|---|
-| Unitarias main/contratos | ✅ 63 tests, cobertura > 98% líneas |
-| Integración motor oficial | ✅ arranque, ajustes, workspace/sesión, restart, parada |
-| E2E Chromium + axe | ✅ portada, paleta, tema, proyectos, iframe, diagnóstico, responsive |
+| Unitarias main/contratos | ✅ 69 tests, cobertura > 98% líneas |
+| Integración motor oficial | ✅ arranque, ajustes, workspace/sesión, restart, parada, CSS/fuentes del tema |
+| E2E Chromium + axe | ✅ portada, paleta, tema, proyectos, iframe, paridad shell/agente claro/oscuro, diagnóstico, responsive |
 | Auditoría dependencias | ✅ 0 vulnerabilidades en raíz y runtime (overrides documentados) |
 | Smoke Electron / RPM Fedora | 🔁 CI (`.github/workflows/ci.yml`); requiere binario Electron y Fedora/Plasma real |
 

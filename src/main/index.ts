@@ -1,7 +1,7 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu, nativeImage, nativeTheme, Notification, protocol, session, shell, Tray } from 'electron'
 import { join, dirname } from 'node:path'
 import { fileURLToPath, pathToFileURL } from 'node:url'
-import { mkdir, readFile, realpath, stat, writeFile, copyFile } from 'node:fs/promises'
+import { mkdir, readFile, realpath, stat, writeFile } from 'node:fs/promises'
 import { z } from 'zod'
 import { APP_ID, APP_ORIGIN, EXTERNAL_LINKS, commandSchema, errorMessage, type EngineStatus } from '../shared/contracts.js'
 import { DesktopStore } from './settings.js'
@@ -140,9 +140,8 @@ async function main(): Promise<void> {
   store = new DesktopStore(join(userData, 'desktop.json'))
   const state = await store.load()
   nativeTheme.themeSource = state.settings.theme
-  await copyFile(join(directory, 'renderer/harness-theme.css'), join(userData, 'harness-theme.css'))
   const runtimeRoot = app.isPackaged ? join(process.resourcesPath, 'runtime') : join(directory, '../runtime')
-  runtime = new HarnessRuntime({ runtimeRoot, home: join(userData, 'harness'), userData, appOrigins: [APP_ORIGIN], log }, state.settings)
+  runtime = new HarnessRuntime({ runtimeRoot, home: join(userData, 'harness'), userData, appOrigins: [APP_ORIGIN], log, themeCssPath: join(directory, 'renderer/harness-theme.css'), fontRoot: join(directory, 'renderer/fonts') }, state.settings)
   runtime.on('status', broadcast)
   session.defaultSession.setPermissionRequestHandler((_contents, permission, callback, details) => callback(allowedPermission(permission, details.requestingUrl, runtime?.bridgeOrigin)))
   session.defaultSession.setPermissionCheckHandler((_contents, permission, origin, details) => allowedPermission(permission, details.requestingUrl ?? origin, runtime?.bridgeOrigin))

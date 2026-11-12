@@ -19,7 +19,7 @@ await writeFile(join(demo, 'README.md'), '# Proyecto de demostración\n\nCarpeta
 const log = new DiagnosticLog(join(preview, 'logs/desktop.log'))
 const store = new DesktopStore(join(preview, 'desktop.json'))
 const state = await store.load()
-const runtime = new HarnessRuntime({ runtimeRoot: join(root, 'runtime'), home: join(preview, 'harness'), userData: preview, appOrigins: [APP_ORIGIN], log, autoRestart: false, startupTimeoutMs: 120_000 }, state.settings)
+const runtime = new HarnessRuntime({ runtimeRoot: join(root, 'runtime'), home: join(preview, 'harness'), userData: preview, appOrigins: [APP_ORIGIN], log, autoRestart: false, startupTimeoutMs: 120_000, themeCssPath: join(root, 'dist/renderer/harness-theme.css'), fontRoot: join(root, 'dist/renderer/fonts') }, state.settings)
 const clients = new Set()
 const sockets = new Set()
 function safeStatus(status = runtime.status()) {

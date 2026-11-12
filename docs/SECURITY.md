@@ -35,9 +35,12 @@ DSH_F asume que el contenido de proyectos, plugins y respuestas de modelo puede 
 `runtime/package.json` fija overrides para advisories conocidos del árbol upstream. Cualquier actualización del motor debe re-ejecutar:
 
 ```bash
-npm run audit:dependencies
-npm run test:integration
+npm run upstream:prepare -- --version <x.y.z> --commit <sha>
+npm --prefix runtime ci
+npm run qualify:runtime
 ```
+
+`qualify:runtime` incluye auditoría de raíz/runtime y pruebas de integración con el motor real. `package:runtime` rechaza empaquetar si la cualificación no coincide con el manifiesto, lockfile, `upstream.json` o los CSS de tema actuales.
 
 ## Reportar problemas
 

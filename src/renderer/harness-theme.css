@@ -1,34 +1,85 @@
 /* Fedora Edition: presentation-only overrides of the documented Harness design tokens.
-   No upstream package or agent behavior is modified. Both palettes retain semantic colors. */
-body {
-  --dsh-font-family-text: 'Inter Variable', 'Noto Sans', 'Segoe UI';
+   The palette is intentionally identical to src/renderer/styles.css.
+   No upstream package or agent behavior is modified. */
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/__dshf/fonts/inter-latin-wght-normal.woff2') format('woff2');
+  unicode-range: U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+@font-face {
+  font-family: 'Inter Variable';
+  font-style: normal;
+  font-weight: 100 900;
+  font-display: swap;
+  src: url('/__dshf/fonts/inter-latin-ext-wght-normal.woff2') format('woff2');
+  unicode-range: U+0100-02BA,U+02BD-02C5,U+02C7-02CC,U+02CE-02D7,U+02DD-02FF,U+0304,U+0308,U+0329,U+1D00-1DBF,U+1E00-1E9F,U+1EF2-1EFF,U+2020,U+20A0-20AB,U+20AD-20AE,U+20B0-20C0,U+2113,U+2C60-2C7F,U+A720-A7FF;
+}
+/* Higher specificity than the upstream body rules, which are appended after this link. */
+html body {
+  --dsh-font-family-text: 'Inter Variable', 'Noto Sans', system-ui, sans-serif;
   --dsw-alias-bg-base: #f7f8fb;
-  --dsw-alias-bg-layer-1: #ffffff;
+  --dsw-alias-bg-layer-1: #fff;
   --dsw-alias-bg-layer-2: #f0f3f9;
   --dsw-alias-bg-layer-3: #e5eaf3;
-  --dsw-alias-border-l1: rgba(24, 39, 75, .07);
-  --dsw-alias-border-l2: rgba(24, 39, 75, .12);
+  --dsw-alias-bg-module-platform: #f0f3f9;
+  --dsw-alias-bg-overlay: #fff;
+  --dsw-alias-border-l1: rgba(24, 39, 75, .08);
+  --dsw-alias-border-l2: rgba(24, 39, 75, .15);
+  --dsw-alias-border-l3: rgba(24, 39, 75, .15);
+  --dsw-alias-border-l4: rgba(24, 39, 75, .15);
+  --dsw-alias-border-selected: #386bd8;
+  --dsw-alias-label-primary: #182234;
+  --dsw-alias-label-secondary: #5d6a80;
+  --dsw-alias-label-tertiary: #667085;
+  --dsw-alias-label-caption: #667085;
+  --dsw-alias-label-on-color: #ffffff;
   --dsw-alias-state-business-primary: #386bd8;
-  --dsw-alias-state-business-tertiary: #e7eefc;
+  --dsw-alias-state-business-tertiary: rgba(56, 107, 216, .10);
   --dsw-alias-link: #386bd8;
-  --dsw-specific-sidebar-fill: #f0f3f9;
-  --dsw-specific-sidebar-nav-item-active: #e1e9f9;
-  --dsw-specific-sidebar-nav-item-active-accent: #d5e2fb;
+  --dsw-alias-button-primary-fill: #386bd8;
+  --dsw-alias-button-primary-hover: #4272d9;
+  --dsw-alias-button-primary-dimmed: #e5eaf3;
+  --dsw-alias-interactive-bg-hover: rgba(24, 39, 75, .06);
+  --dsw-alias-interactive-bg-active: rgba(24, 39, 75, .10);
+  --dsw-specific-sidebar-fill: #eef1f7;
+  --dsw-specific-sidebar-nav-item-active: rgba(56, 107, 216, .10);
+  --dsw-specific-sidebar-nav-item-active-accent: rgba(56, 107, 216, .16);
+  --dsw-specific-tip: #f0f3f9;
   --dsw-radius-md: 10px;
   --dsw-radius-lg: 14px;
+  color-scheme: light;
 }
-body[data-ds-dark-theme] {
-  --dsw-alias-bg-base: #14171d;
-  --dsw-alias-bg-layer-1: #1b1f27;
-  --dsw-alias-bg-layer-2: #222732;
-  --dsw-alias-bg-layer-3: #2b3240;
-  --dsw-alias-border-l1: rgba(255, 255, 255, .055);
-  --dsw-alias-border-l2: rgba(255, 255, 255, .10);
-  --dsw-alias-state-business-primary: #85afff;
-  --dsw-alias-state-business-tertiary: #233451;
-  --dsw-alias-link: #91b7ff;
-  --dsw-specific-sidebar-fill: #101318;
-  --dsw-specific-sidebar-nav-item-active: #222c3e;
-  --dsw-specific-sidebar-nav-item-active-accent: #2a3c5c;
+html body[data-ds-dark-theme] {
+  --dsw-alias-bg-base: #101318;
+  --dsw-alias-bg-layer-1: #171b22;
+  --dsw-alias-bg-layer-2: #1d222c;
+  --dsw-alias-bg-layer-3: #252c38;
+  --dsw-alias-bg-module-platform: #1d222c;
+  --dsw-alias-bg-overlay: #171b22;
+  --dsw-alias-border-l1: rgba(255, 255, 255, .075);
+  --dsw-alias-border-l2: rgba(255, 255, 255, .13);
+  --dsw-alias-border-l3: rgba(255, 255, 255, .13);
+  --dsw-alias-border-l4: rgba(255, 255, 255, .13);
+  --dsw-alias-border-selected: #82adff;
+  --dsw-alias-label-primary: #f1f4fa;
+  --dsw-alias-label-secondary: #9ba5b7;
+  --dsw-alias-label-tertiary: #8a94a6;
+  --dsw-alias-label-caption: #8a94a6;
+  --dsw-alias-label-on-color: #ffffff;
+  --dsw-alias-state-business-primary: #82adff;
+  --dsw-alias-state-business-tertiary: rgba(100, 151, 255, .13);
+  --dsw-alias-link: #82adff;
+  --dsw-alias-button-primary-fill: #3d6fd8;
+  --dsw-alias-button-primary-hover: #4272d9;
+  --dsw-alias-button-primary-dimmed: #252c38;
+  --dsw-alias-interactive-bg-hover: rgba(255, 255, 255, .08);
+  --dsw-alias-interactive-bg-active: rgba(255, 255, 255, .14);
+  --dsw-specific-sidebar-fill: #0c0f14;
+  --dsw-specific-sidebar-nav-item-active: rgba(100, 151, 255, .13);
+  --dsw-specific-sidebar-nav-item-active-accent: rgba(100, 151, 255, .20);
+  --dsw-specific-tip: #1d222c;
+  color-scheme: dark;
 }
-body[data-ds-dark-theme] ::selection { background: #34558a; }

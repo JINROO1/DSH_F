@@ -1,8 +1,10 @@
 import { z } from 'zod'
+import upstream from '../../runtime/upstream.json'
 
 export const APP_ID = 'io.github.jinroo1.dshfedora'
-export const UPSTREAM_VERSION = '0.2.2-rc.2'
-export const UPSTREAM_COMMIT = 'ddac96760b6edf8fa0fe17cbdcf0b512f4c12b2c'
+export const UPSTREAM_VERSION: string = upstream.version
+export const UPSTREAM_NODE_VERSION: string = upstream.nodeVersion
+export const UPSTREAM_COMMIT: string | null = upstream.sourceCommit
 export const APP_ORIGIN = 'dshf://app'
 export const EXTERNAL_LINKS = {
   documentation: 'https://github.com/deepseek-ai/deepseek-harness',

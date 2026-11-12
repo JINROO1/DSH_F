@@ -23,7 +23,7 @@ sudo dnf install -y nodejs npm git rpm-build \
 
 npm ci
 npm --prefix runtime ci
-npm run check
+npm run qualify:runtime
 npm run package:fedora
 ```
 
@@ -34,7 +34,7 @@ El artefacto queda en `release/dsh-fedora-0.1.0-x86_64.rpm`.
 - **Bandeja**: icono `tray.png` de 24 px. Si el compositor no expone bandeja, la aplicación degrada a ventana normal y lo registra en diagnóstico.
 - **Cerrar a bandeja**: preferencia activada por defecto; la ventana se oculta y el motor sigue disponible. Desactivar para cerrar completamente.
 - **Autostart**: escribe `~/.config/autostart/io.github.jinroo1.dshfedora.desktop` con `X-KDE-autostart-after=panel`. No usa la API de login items de Electron (macOS/Windows).
-- **Tema**: `nativeTheme.themeSource` sigue la preferencia Sistema/Oscuro/Claro y se sincroniza con `ui-theme` de Harness.
+- **Tema**: `nativeTheme.themeSource` sigue la preferencia Sistema/Oscuro/Claro y se sincroniza con `ui-theme` de Harness. El iframe recibe `harness-theme.css` con la misma paleta que la shell y las fuentes Inter locales servidas por el puente.
 - **Wayland/X11**: Electron selecciona el backend ozone disponible en la sesión. En Plasma Wayland puede usar Wayland nativo o XWayland según la versión y las variables de entorno; no se fuerza un backend desde DSH_F.
 
 ## Datos del usuario

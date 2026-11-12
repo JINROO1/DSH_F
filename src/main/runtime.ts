@@ -22,6 +22,8 @@ export interface RuntimeOptions {
   stopTimeoutMs?: number
   autoRestart?: boolean
   guardPath?: string
+  themeCssPath?: string
+  fontRoot?: string
 }
 const rpcResponse = z.object({
   type: z.literal('server-response'), rpcId: z.string(),
@@ -132,7 +134,8 @@ export class HarnessRuntime extends EventEmitter {
       this.cookie = await exchangeLaunchToken(url)
       bridge = new HarnessBridge({
         upstream: url.origin, cookie: this.cookie, appOrigins: this.options.appOrigins,
-        themeCss: await readFile(join(this.options.userData, 'harness-theme.css'), 'utf8').catch(() => DEFAULT_THEME),
+        themeCss: await readFile(this.options.themeCssPath ?? join(this.options.userData, 'harness-theme.css'), 'utf8').catch(() => DEFAULT_THEME),
+        ...(this.options.fontRoot ? { fontRoot: this.options.fontRoot } : {}),
       })
       await bridge.listen()
       if (this.stopping || this.disposed) throw new Error('Inicio cancelado')
@@ -181,8 +184,8 @@ export class HarnessRuntime extends EventEmitter {
   async applySettings(settings: Settings): Promise<void> {
     this.settings = settings
     if (this.phase !== 'ready' && !(this.phase === 'starting' && this.bridge)) return
-    // Harness 0.2.2-rc.2 solo admite zh/en; la shell en español se sincroniza
-    // con el motor en inglés hasta que upstream publique locale es.
+    // La release cualificada de Harness solo admite zh/en; la shell en español
+    // se sincroniza con el motor en inglés hasta que upstream publique locale es.
     const upstreamLocale = settings.language === 'es' ? 'en' : settings.language
     for (const [ns, patch] of [['locale', { preference: upstreamLocale }], ['ui-theme', { preference: settings.theme }]] as const) {
       try { await this.rpc('settings/update', { ns, patch }) } catch (error) { this.options.log.write('warn', `No se pudo sincronizar ${ns}: ${errorMessage(error)}`) }
@@ -235,4 +238,4 @@ export class HarnessRuntime extends EventEmitter {
 
   async dispose(): Promise<void> { this.disposed = true; await this.stop(); await this.options.log.flush(); this.removeAllListeners() }
 }
-const DEFAULT_THEME = 'body{--dsw-alias-state-business-primary:#3d6de0}'
+const DEFAULT_THEME = ''

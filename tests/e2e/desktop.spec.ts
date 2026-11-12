@@ -21,7 +21,7 @@ test('portada premium, navegación y paleta de comandos accesible por teclado', 
   await page.keyboard.press('Control+k')
   const palette = page.getByRole('dialog', { name: 'Paleta de comandos' })
   await expect(palette).toBeVisible()
-  await page.getByRole('textbox', { name: 'Paleta de comandos' }).fill('Ajustes')
+  await page.getByRole('combobox', { name: 'Paleta de comandos' }).fill('Ajustes')
   await page.keyboard.press('Enter')
   await expect(page.getByRole('heading', { name: 'Ajustes', exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Inicio', exact: true }).click()

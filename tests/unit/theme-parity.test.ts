@@ -39,6 +39,8 @@ const tokenMap: Record<string, string> = {
   '--dsw-alias-state-business-tertiary': '--accent-soft',
   '--dsw-alias-link': '--accent',
   '--dsw-alias-button-primary-fill': '--accent-strong',
+  '--dsw-alias-button-primary-hover': '--accent-hover',
+  '--dsw-alias-label-on-color': '--on-accent',
   '--dsw-specific-sidebar-fill': '--sidebar',
   '--dsw-specific-sidebar-nav-item-active': '--accent-soft',
   '--dsw-specific-tip': '--surface-2',
@@ -57,7 +59,16 @@ describe('paridad de tema shell/agente', () => {
       expect(agentDark.get(alias), `${alias} dark`).toBe(shellDark.get(variable))
     }
     expect(agentLight.get('--dsh-font-family-text')).toBe(shellDark.get('font-family'))
+    expect(agentLight.get('color-scheme')).toBe('light')
+    expect(agentDark.get('color-scheme')).toBe('dark')
     expect(harness).toContain("url('/__dshf/fonts/inter-latin-wght-normal.woff2')")
     expect(harness).toContain("url('/__dshf/fonts/inter-latin-ext-wght-normal.woff2')")
+  })
+
+  it('la preferencia de sistema usa exactamente la misma paleta clara que el selector explícito', async () => {
+    const shell = await readFile(join(root, 'src/renderer/styles.css'), 'utf8')
+    const explicit = declarations(block(shell, ':root[data-theme=light]'))
+    const system = declarations(block(shell, ':root:not([data-theme=dark])'))
+    expect(system).toEqual(explicit)
   })
 })

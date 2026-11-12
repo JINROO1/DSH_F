@@ -42,7 +42,9 @@ DSH_F transforma DeepSeek Harness en una aplicación de escritorio nativa para *
 
 El agente oficial hereda la misma paleta que la shell en ambos temas:
 
-![Agente en tema claro](docs/screenshots/agent-light.png)
+| Inicio claro | Agente claro |
+|---|---|
+| ![Inicio en tema claro](docs/screenshots/home-light.png) | ![Agente en tema claro](docs/screenshots/agent-light.png) |
 
 ## Instalación en Fedora
 
@@ -114,6 +116,8 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 ```
 
 - [Mantenimiento para principiantes](docs/MANTENIMIENTO.md)
+- [Roadmap por fases y subfases](docs/ROADMAP.md)
+- [Accesibilidad y evidencia de la Fase 1](docs/ACCESIBILIDAD.md)
 - [Investigación upstream](docs/UPSTREAM.md)
 - [Seguridad](docs/SECURITY.md)
 - [Pruebas](docs/TESTING.md)
@@ -124,9 +128,9 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 
 | Área | Estado |
 |---|---|
-| Unitarias main/contratos | ✅ 69 tests, cobertura > 98% líneas |
+| Unitarias main/contratos/tema | ✅ 90 tests, cobertura > 98% líneas; contraste WCAG y paridad shell/agente |
 | Integración motor oficial | ✅ arranque, ajustes, workspace/sesión, restart, parada, CSS/fuentes del tema |
-| E2E Chromium + axe | ✅ portada, paleta, tema, proyectos, iframe, paridad shell/agente claro/oscuro, diagnóstico, responsive |
+| E2E Chromium + axe | ✅ 22 tests; matriz axe claro/oscuro de 6 escenarios, teclado/foco, paridad shell/agente, diagnóstico y responsive |
 | Auditoría dependencias | ✅ 0 vulnerabilidades en raíz y runtime (overrides documentados) |
 | Smoke Electron / RPM Fedora | 🔁 CI (`.github/workflows/ci.yml`); requiere binario Electron y Fedora/Plasma real |
 

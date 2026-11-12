@@ -5,6 +5,8 @@ Si la sesión se borra, el código, las pruebas, la documentación y el historia
 
 Repositorio: https://github.com/JINROO1/DSH_F
 
+Plan vigente: [ROADMAP.md](ROADMAP.md). Evidencia y límites de accesibilidad: [ACCESIBILIDAD.md](ACCESIBILIDAD.md).
+
 ## Idea principal
 
 Tú eres el dueño/mantenedor del repositorio. Una IA puede ayudarte por turnos, pero no es un servicio permanente ni guarda el proyecto por su cuenta.
@@ -48,7 +50,7 @@ Si `npm run check` pasa, tienes una base sana.
 
 ## Rutina normal de mantenimiento
 
-1. Crea una rama para el cambio:
+1. Crea una rama para el cambio en tu copia local. Si trabajas dentro de una sesión de Arena, usa la rama activa que indique la sesión y no crees ramas alternativas:
 
    ```bash
    git checkout -b fix/descripcion-corta
@@ -225,7 +227,7 @@ Prompt útil:
 
 ```text
 Trabajo en https://github.com/JINROO1/DSH_F.
-Lee README.md, docs/MANTENIMIENTO.md, docs/UPSTREAM.md, docs/TESTING.md y docs/SECURITY.md.
+Lee README.md, docs/MANTENIMIENTO.md, docs/ROADMAP.md, docs/ACCESIBILIDAD.md, docs/UPSTREAM.md, docs/TESTING.md y docs/SECURITY.md.
 Ejecuta npm run setup y npm run check antes de proponer cambios.
 No inventes versiones, commits ni credenciales.
 Si algo no está documentado, dímelo y proponga añadirlo al repo.
@@ -239,6 +241,8 @@ Si la IA propone un cambio importante, pídele que también actualice la documen
 |---|---|
 | `README.md` | Puerta de entrada del proyecto. |
 | `docs/MANTENIMIENTO.md` | Esta guía. |
+| `docs/ROADMAP.md` | Plan por fases/subfases, estados y próximo paso. |
+| `docs/ACCESIBILIDAD.md` | Matriz axe, contraste, teclado, capturas y límites de la Fase 1. |
 | `docs/UPSTREAM.md` | Cómo se investigó y actualiza el motor oficial. |
 | `docs/TESTING.md` | Qué pruebas existen y cómo ejecutarlas. |
 | `docs/SECURITY.md` | Modelo de seguridad y overrides. |
@@ -257,6 +261,7 @@ Si la IA propone un cambio importante, pídele que también actualice la documen
 - [ ] `npm run check`.
 - [ ] Revisar releases/tags de DeepSeek Harness.
 - [ ] Revisar advisories/overrides si hay actualización.
+- [ ] Actualizar estados/evidencia en `docs/ROADMAP.md`; no marcar Hecho sin pruebas.
 - [ ] Si actualizas: `upstream:prepare` → `runtime ci` → `qualify:runtime`.
 - [ ] Revisar CI en GitHub.
 - [ ] Publicar release solo si todo está verde.

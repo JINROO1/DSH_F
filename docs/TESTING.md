@@ -5,14 +5,18 @@
 | Capa | Comando | Qué verifica |
 |---|---|---|
 | Tipos | `npm run typecheck` | TypeScript estricto en main, preload, renderer, tests y configs. |
-| Unitarias | `npm run test` | Contratos Zod, fence de seguridad, cookies, tickets, proxy HTTP/WS, fuentes del tema, persistencia atómica, logs/redacción, ciclo de vida del runtime, autostart XDG, paridad CSS shell/agente y herramientas de actualización upstream. |
+| Unitarias | `npm run test` | Contratos Zod, fence de seguridad, cookies, tickets, proxy HTTP/WS, fuentes del tema, persistencia atómica, logs/redacción, ciclo de vida del runtime, autostart XDG, paridad CSS shell/agente, contraste WCAG de tokens/gradientes y herramientas de actualización upstream. |
 | Cobertura | `npm run test:coverage` | Umbrales: 80% líneas/funciones/statements y 70% branches en la capa main crítica. |
 | Integración | `npm run test:integration` | Arranca el motor oficial real con el Node incluido; sincroniza ajustes; sirve la UI decorada; crea workspace/sesión; reinicia y conserva estado; libera puertos al parar. |
-| E2E navegador | `npm run test:e2e` | Playwright + axe-core: portada, paleta, tema/idioma/movimiento, proyectos, iframe Harness, paridad de paleta shell/agente en claro y oscuro, diagnóstico/exportación, stop/restart, responsive y enlaces externos. |
+| E2E navegador | `npm run test:e2e` | Playwright + axe-core: matriz axe de 6 escenarios en claro/oscuro, teclado/foco/sistema/movimiento, portada, paleta, tema/idioma, proyectos, iframe Harness, paridad shell/agente, diagnóstico/exportación, stop/restart, responsive y enlaces externos. |
 | Smoke Electron | `npm run test:electron` | Ventana nativa, IPC, motor real, reinicio y cierre limpio. Requiere binario Electron y display (CI usa `xvfb-run`). |
 | Auditoría | `npm run audit:dependencies` | `npm audit --omit=dev` en raíz y runtime. |
 | Completa | `npm run check` | Typecheck + cobertura + build + integración + E2E. |
 | Cualificación de release | `npm run qualify:runtime` | Auditoría + `check`; escribe `.packaging/qualification.json` ligado al manifiesto, lockfile, `upstream.json` y CSS de tema. Obligatorio antes de `package:fedora`. |
+
+## Accesibilidad
+
+La matriz y los límites están en [ACCESIBILIDAD.md](ACCESIBILIDAD.md). `tests/e2e/accessibility.spec.ts` audita la shell y los diálogos propios en claro/oscuro excluyendo solo el iframe upstream; no desactiva `color-contrast`. `tests/unit/theme-contrast.test.ts` comprueba pares token/fondo, fondos suaves, botones/hover y extremos/puntos de gradiente con umbral exacto 4.5:1. La revisión con lector de pantalla, zoom, alto contraste y Plasma real sigue pendiente.
 
 ## Ejecutar en Fedora KDE
 

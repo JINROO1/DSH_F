@@ -113,6 +113,7 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 └────────────────────────────────────────────────────────────┘
 ```
 
+- [Mantenimiento para principiantes](docs/MANTENIMIENTO.md)
 - [Investigación upstream](docs/UPSTREAM.md)
 - [Seguridad](docs/SECURITY.md)
 - [Pruebas](docs/TESTING.md)

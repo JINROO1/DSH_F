@@ -128,9 +128,13 @@ const server = createServer(async (req, res) => {
 server.on('upgrade', (req, socket, head) => {
   socket.on('error', () => socket.destroy())
   const bridgeOrigin = runtime.bridgeOrigin
-  if (!bridgeOrigin || !req.url?.startsWith('/connect')) { socket.destroy(); return }
+  // Harness abre su WebSocket multiplexado en /api/remote.mux relativo al
+  // documento del iframe, es decir /__engine/api/remote.mux en la vista previa.
+  // Igual que en el proxy HTTP, hay que quitar el prefijo antes de reenviar.
+  if (!bridgeOrigin || !req.url?.startsWith('/__engine/')) { socket.destroy(); return }
+  const targetPath = req.url.slice('/__engine'.length)
   const upstream = netConnect(Number(new URL(bridgeOrigin).port), '127.0.0.1', () => {
-    const headers = [`GET ${req.url} HTTP/1.1`, `Host: ${new URL(bridgeOrigin).host}`, `Origin: ${bridgeOrigin}`]
+    const headers = [`GET ${targetPath} HTTP/1.1`, `Host: ${new URL(bridgeOrigin).host}`, `Origin: ${bridgeOrigin}`]
     for (const [name, value] of Object.entries(req.headers)) if (!['host', 'origin'].includes(name) && value !== undefined) headers.push(`${name}: ${Array.isArray(value) ? value.join(', ') : value}`)
     upstream.write(headers.join('\r\n') + '\r\n\r\n')
     if (head.length) upstream.write(head)

@@ -56,8 +56,9 @@ jobs:
       - name: Construir RPM Fedora
         run: |
           set -o pipefail
-          npx electron-builder --linux rpm --x64 2>&1 | tee electron-builder.log || {
-            tail -n 40 electron-builder.log | sed 's/^/::error::electron-builder: /'
+          npx electron-builder --linux rpm --x64 --publish never 2>&1 | tee electron-builder.log || {
+            MSG="$(tail -n 80 electron-builder.log | tr '\n' '|' | sed 's/"/\\"/g')"
+            echo "::error::electron-builder tail: ${MSG}"
             exit 1
           }
       - name: Generar y verificar checksums SHA-256

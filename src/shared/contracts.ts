@@ -20,6 +20,7 @@ export const settingsSchema = z.object({
   launchOnLogin: z.boolean().default(false),
   reduceMotion: z.boolean().default(false),
   onboardingDismissed: z.boolean().default(false),
+  notificationsEnabled: z.boolean().default(true),
 }).strict()
 export type Settings = z.infer<typeof settingsSchema>
 export const DEFAULT_SETTINGS: Settings = settingsSchema.parse({})
@@ -31,6 +32,7 @@ export const settingsPatchSchema = z.object({
   launchOnLogin: z.boolean().optional(),
   reduceMotion: z.boolean().optional(),
   onboardingDismissed: z.boolean().optional(),
+  notificationsEnabled: z.boolean().optional(),
 }).strict()
 export type SettingsPatch = z.infer<typeof settingsPatchSchema>
 

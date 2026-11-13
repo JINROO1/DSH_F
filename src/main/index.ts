@@ -9,6 +9,7 @@ import { DiagnosticLog, redact } from './log.js'
 import { HarnessRuntime } from './runtime.js'
 import { collectDiagnostics, diagnosticsText } from './diagnostics.js'
 import { checkForUpdates } from './updates.js'
+import { notificationForStatus } from './notifications.js'
 import { validAppSender, validateExternalUrl, allowedPermission, allowedNavigation } from './security.js'
 import { setAutostart } from './autostart.js'
 
@@ -27,7 +28,10 @@ let status: EngineStatus = { phase: 'stopped', message: 'Preparando…', attempt
 protocol.registerSchemesAsPrivileged([{ scheme: 'dshf', privileges: { standard: true, secure: true, supportFetchAPI: true, corsEnabled: true } }])
 
 function broadcast(next: EngineStatus): void {
+  const previous = status
   status = next
+  const notice = notificationForStatus(previous, next, store?.snapshot().settings.notificationsEnabled ?? false)
+  if (notice && Notification.isSupported()) new Notification(notice).show()
   if (window && !window.isDestroyed()) {
     const { bridgeUrl: _url, ...safe } = next
     window.webContents.send('dshf:engine-status', next)
@@ -183,7 +187,7 @@ async function main(): Promise<void> {
   if (state.settings.launchOnLogin) await setAutostart({ enabled: true, configHome: app.getPath('appData'), executable: process.execPath, ...(!app.isPackaged ? { appPath: app.getAppPath() } : {}) })
   void runtime.start().catch(error => {
     log?.write('error', errorMessage(error))
-    if (Notification.isSupported()) new Notification({ title: 'No se pudo iniciar Harness', body: 'Abre Diagnóstico para ver el detalle y reintentar.' }).show()
+    if (store?.snapshot().settings.notificationsEnabled && Notification.isSupported()) new Notification({ title: 'No se pudo iniciar Harness', body: 'Abre Diagnóstico para ver el detalle y reintentar.' }).show()
   })
 }
 

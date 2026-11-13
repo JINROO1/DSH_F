@@ -43,6 +43,36 @@ El artefacto queda en `release/dsh-fedora-0.1.0-x86_64.rpm`.
 - Motor: `userData/harness` (`DSH_HOME`) y `userData/agents` (`DSH_AGENTS_HOME`).
 - Proyectos recientes: solo rutas; abrir un proyecto no copia ni borra archivos.
 
+## Notificaciones y ciclo de vida
+
+- Notificaciones nativas genéricas de motor listo/error, silenciables desde Ajustes (`notificationsEnabled`). No incluyen rutas, mensajes del motor ni secretos.
+- Si la bandeja no está disponible, se degrada a ventana normal y se registra un aviso.
+- La guarda de ciclo de vida termina el grupo del motor si el padre muere abruptamente; parada normal con `SIGTERM` y escalada `SIGKILL`.
+- Autostart XDG y cierre a bandeja siguen siendo preferencias explícitas.
+
+## Publicación verificable
+
+CI genera `SHA256SUMS` junto al RPM y lo verifica antes de subir artefactos/release:
+
+```bash
+sha256sum -c SHA256SUMS
+sudo dnf install -y ./dsh-fedora-0.1.0-x86_64.rpm
+```
+
+La decisión de distribución está en [ADR 0001](adr/0001-distribucion-rpm.md): GitHub Releases primero; COPR/repositorio propio solo después de cuentas, firma y matriz Fedora real. La firma criptográfica de artefactos sigue pendiente de claves fuera del repo y revisión humana.
+
+## Upgrade y rollback
+
+Checklist mínimo antes de marcar una actualización RPM como segura:
+
+1. Instalar la versión anterior y crear datos/proyectos de prueba.
+2. Anotar `userData`, `DSH_HOME` y rutas de proyectos.
+3. Instalar el RPM nuevo sin borrar `~/.config/DeepSeek Harness Fedora/`.
+4. Verificar preferencias, proyectos recientes, sesiones y credenciales oficiales.
+5. Si falla, reinstalar la versión anterior y restaurar backup de preferencias si procede.
+
+No se borran proyectos del usuario al quitar/instalar el RPM. La validación real está en [FEDORA-MATRIX.md](FEDORA-MATRIX.md).
+
 ## Verificación pendiente en hardware real
 
 Este repositorio se desarrolló en un contenedor Debian sin KDE. Lo verificable aquí (motor real, puente, UI, E2E Chromium, empaquetado CI) está cubierto por tests. La bandeja Plasma, decoraciones Wayland, instalación RPM y comportamiento de suspensión/hibernación deben validarse en una máquina Fedora/Plasma real antes de distribuir a usuarios finales.

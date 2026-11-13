@@ -36,7 +36,7 @@ Tamaños orientativos: **S** = cambio localizado, **M** = varios archivos/prueba
 | 1 | Accesibilidad y confianza visual | Alta | En curso: automatización completa, 1.8 manual bloqueada | 0 |
 | 2 | Onboarding y diagnóstico amigable | Alta | Hecho | 1 |
 | 3 | Actualizaciones manuales asistidas | Alta | Hecho | 1; flujo upstream existente |
-| 4 | Fedora/KDE y distribución profesional | Media/alta | Pendiente | 1–3; hardware Fedora |
+| 4 | Fedora/KDE y distribución profesional | Media/alta | En curso: automatizable hecho; hardware/firma bloqueados | 1–3; hardware Fedora |
 | 5 | Seguridad y cadena de suministro | Media/alta | Pendiente | 3–4 para distribución firmada |
 | 6 | Productividad diaria | Media | Pendiente | 2 |
 | 7 | Comunidad y sostenibilidad | Continua | Pendiente | 0 |
@@ -116,14 +116,14 @@ Dependencias: flujo `runtime/upstream.json` y `qualify:runtime` ya existentes. L
 
 Objetivo: pasar de “RPM construido” a “RPM actualizable y verificable en Fedora real”.
 
-| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño |
-|---|---|---|---|---|
-| 4.1 | Matriz Fedora real | Probar Fedora vigente en Wayland/X11 y Plasma | Resultados con versión, sesión gráfica, hardware y fallos conocidos | L |
-| 4.2 | Bandeja y ciclo de vida | Validar StatusNotifier, cerrar a bandeja, autostart y suspensión | Sin procesos huérfanos; preferencias respetadas; degradación si no hay bandeja | M |
-| 4.3 | Notificaciones nativas | Motor listo/error y avisos opcionales | Se pueden silenciar; no filtran rutas/secretos; funcionan sin telemetry | M |
-| 4.4 | Actualización RPM | Instalar versión anterior, crear datos, instalar nueva | Conserva userData/DSH_HOME/proyectos; rollback documentado | M |
-| 4.5 | Repositorio de paquetes | Investigar COPR vs repo propio | ADR con costes, firmas, mantenimiento y decisión; no publicar repo experimental como estable | L |
-| 4.6 | Publicación verificable | Checksums, instrucciones de verificación y proceso de firma | Release reproducible en CI; claves fuera del repo; documentación de rotación/revocación | L |
+| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño | Estado |
+|---|---|---|---|---|---|
+| 4.1 | Matriz Fedora real | Probar Fedora vigente en Wayland/X11 y Plasma | Resultados con versión, sesión gráfica, hardware y fallos conocidos | L | Bloqueado: hardware Fedora/Plasma real; plantilla en `docs/FEDORA-MATRIX.md` |
+| 4.2 | Bandeja y ciclo de vida | Validar StatusNotifier, cerrar a bandeja, autostart y suspensión | Sin procesos huérfanos; preferencias respetadas; degradación si no hay bandeja | M | En curso: código/tests automáticos hechos; validación Plasma/suspensión en 4.1 |
+| 4.3 | Notificaciones nativas | Motor listo/error y avisos opcionales | Se pueden silenciar; no filtran rutas/secretos; funcionan sin telemetry | M | Hecho: preferencia, avisos genéricos y tests; validación nativa en 4.1 |
+| 4.4 | Actualización RPM | Instalar versión anterior, crear datos, instalar nueva | Conserva userData/DSH_HOME/proyectos; rollback documentado | M | Bloqueado: requiere RPM previo/Fedora real; checklist en `docs/FEDORA.md` |
+| 4.5 | Repositorio de paquetes | Investigar COPR vs repo propio | ADR con costes, firmas, mantenimiento y decisión; no publicar repo experimental como estable | L | Hecho: ADR 0001; publicación/COPR pendiente de cuentas y firma |
+| 4.6 | Publicación verificable | Checksums, instrucciones de verificación y proceso de firma | Release reproducible en CI; claves fuera del repo; documentación de rotación/revocación | L | En curso: SHA256SUMS en CI y verificación documentada; firma bloqueada |
 
 Bloqueo externo: hardware Fedora/Plasma y decisiones/cuentas de distribución. No marcar Hecho solo porque un contenedor Fedora instaló el RPM.
 
@@ -176,7 +176,8 @@ Objetivo: que otra persona pueda contribuir sin depender del mantenedor original
 | 2026-11-12 | 1.2–1.7 | Paleta clara accesible, semántica/foco, matriz axe, capturas y cualificación | `docs/ACCESIBILIDAD.md`: 12/12 axe, 20 tests de contraste, 90/90 unitarias, 3/3 integración, 22/22 E2E, auditoría 0+0; `qualify:runtime` 23:07:59 UTC |
 | 2026-11-12 | 2 | Onboarding descartable, credenciales/permisos, recuperación y logs filtrables | `docs/ONBOARDING.md`; typecheck/cobertura/build/integración verdes, 92/92 unitarias, 24/24 E2E |
 | 2026-11-13 | 3 | Comprobación manual de actualizaciones en CLI/app, privacidad y pruebas offline | `docs/UPDATES.md`; `npm run check` verde: 97/97 unitarias, 3/3 integración, 25/25 E2E |
+| 2026-11-13 | 4 | Notificaciones opcionales, matriz Fedora, ADR distribución y checksums CI | `docs/FEDORA.md`, `docs/FEDORA-MATRIX.md`, `docs/adr/0001-distribucion-rpm.md`; `npm run check` verde: 99/99 unitarias, 3/3 integración, 26/26 E2E |
 
 ## Próximo paso inmediato
 
-Continuar con **Fase 4, Fedora/KDE y distribución profesional**, dejando bloqueado lo que requiera hardware Fedora/Plasma real o decisiones de distribución. No publicar releases ni firmar artefactos sin revisión humana y CI verde.
+Continuar con **Fase 5, seguridad y cadena de suministro**. Los bloqueos externos de Fedora/Plasma, upgrade RPM real y firma permanecen abiertos; no publicar ni firmar sin revisión humana.

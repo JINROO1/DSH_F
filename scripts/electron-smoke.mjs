@@ -25,8 +25,10 @@ try {
   await page.evaluate(() => window.dshDesktop.restartEngine())
   await page.waitForFunction(async () => (await window.dshDesktop.getEngineStatus()).phase === 'ready', undefined, { timeout: 90_000 })
   await page.screenshot({ path: join(root, 'test-results/electron-smoke.png') })
-  await page.evaluate(() => window.dshDesktop.windowAction('close'))
-  await app.close()
+  // Dispara el cierre nativo sin esperar a que la página se destruya dentro del
+  // mismo evaluate; si no, Playwright rechaza con "Target page … closed".
+  await page.evaluate(() => { setTimeout(() => { void window.dshDesktop.windowAction('close') }, 50) })
+  await app.close().catch(() => undefined)
   app = undefined
   console.log('Electron smoke OK: ventana, IPC, motor real, reinicio y cierre limpio.')
 } catch (error) {

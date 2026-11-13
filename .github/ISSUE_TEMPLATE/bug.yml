@@ -1,0 +1,68 @@
+name: Bug
+description: Algo no funciona en la shell Fedora/Electron o la vista previa
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Gracias por reportar. **No incluyas API keys, tokens, cookies ni logs sin redactar.**
+        Si es una vulnerabilidad, usa el aviso privado de seguridad, no este formulario.
+  - type: input
+    id: version
+    attributes:
+      label: Versión DSH_F / commit
+      placeholder: "0.1.0 o abc1234"
+    validations:
+      required: true
+  - type: input
+    id: upstream
+    attributes:
+      label: Versión upstream Harness
+      placeholder: "0.2.2-rc.2"
+    validations:
+      required: true
+  - type: dropdown
+    id: environment
+    attributes:
+      label: Entorno
+      options:
+        - Fedora KDE Plasma (RPM)
+        - Fedora KDE Plasma (desarrollo)
+        - Linux vista previa navegador
+        - Otro Linux
+    validations:
+      required: true
+  - type: textarea
+    id: environment-details
+    attributes:
+      label: Detalles de entorno
+      description: Versión Fedora/Plasma, sesión Wayland/X11, Node, hardware relevante.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      placeholder: "1. Abrir… 2. Clic en… 3. Ver error…"
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidencia redactada
+      description: Diagnóstico exportado, capturas o logs sin secretos.
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Seguridad
+      options:
+        - label: No he incluido credenciales, tokens ni información privada sensible.
+          required: true

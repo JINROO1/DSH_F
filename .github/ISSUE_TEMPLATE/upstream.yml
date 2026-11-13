@@ -1,0 +1,56 @@
+name: Actualización upstream
+description: Proponer o cualificar una nueva versión de DeepSeek Harness
+labels: [upstream]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Las actualizaciones del motor siguen el flujo manual cualificado.
+        No parchees el paquete oficial ni mezcles esta actualización con tema/refactor/packaging.
+  - type: input
+    id: current
+    attributes:
+      label: Versión actual fijada
+      placeholder: "0.2.2-rc.2"
+    validations:
+      required: true
+  - type: input
+    id: target
+    attributes:
+      label: Versión objetivo
+    validations:
+      required: true
+  - type: input
+    id: source
+    attributes:
+      label: Release/commit/tag oficial de origen
+    validations:
+      required: true
+  - type: textarea
+    id: changes
+    attributes:
+      label: Cambios upstream relevantes y compatibilidad
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidencia de cualificación
+      description: "upstream:prepare, runtime ci, audit:dependencies, qualify:runtime, integración/E2E, smoke Electron si aplica."
+    validations:
+      required: true
+  - type: textarea
+    id: rollback
+    attributes:
+      label: Plan de rollback
+    validations:
+      required: true
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Seguridad
+      options:
+        - label: No he incluido credenciales, tokens ni información privada sensible.
+          required: true
+        - label: No se parchea el paquete oficial de Harness.
+          required: true

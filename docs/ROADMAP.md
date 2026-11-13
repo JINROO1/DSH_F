@@ -4,7 +4,7 @@ Este documento convierte las mejoras propuestas en trabajo verificable. Es la fu
 
 - Punto de partida: commit `74b48ad` (motor `0.2.2-rc.2`, tema unificado, actualización upstream cualificada y guía de mantenimiento).
 - Rama de trabajo de esta sesión: `arena/c1de365d-dsh-f`. En Arena se trabaja sobre la rama activa indicada por la sesión; no se crean ramas alternativas.
-- Primera fase en ejecución: **Fase 1, accesibilidad y confianza visual**.
+- Estado actual: **Fases 0–7 completadas en lo automatizable**; los bloqueos externos siguen documentados en cada subfase.
 - No hay fechas comprometidas. El orden expresa dependencias y prioridad, no un calendario de publicación.
 
 ## Cómo leer y actualizar este plan
@@ -39,7 +39,7 @@ Tamaños orientativos: **S** = cambio localizado, **M** = varios archivos/prueba
 | 4 | Fedora/KDE y distribución profesional | Media/alta | En curso: automatizable hecho; hardware/firma bloqueados | 1–3; hardware Fedora |
 | 5 | Seguridad y cadena de suministro | Media/alta | En curso: automatizable hecho; firma bloqueada | 3–4 para distribución firmada |
 | 6 | Productividad diaria | Media | Hecho | 2 |
-| 7 | Comunidad y sostenibilidad | Continua | Pendiente | 0 |
+| 7 | Comunidad y sostenibilidad | Continua | Hecho: proceso establecido; triaje mensual recurrente | 0 |
 
 ## Fase 0 — Plan y mantenimiento
 
@@ -159,13 +159,13 @@ Objetivo: reducir fricción sin convertir la shell en otro motor de agentes.
 
 Objetivo: que otra persona pueda contribuir sin depender del mantenedor original.
 
-| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño |
-|---|---|---|---|---|
-| 7.1 | CONTRIBUTING | Guía de entorno, pruebas, estilo y PR pequeños | Un colaborador nuevo puede ejecutar check desde cero | S |
-| 7.2 | Plantillas de issues/PR | Bug, mejora, actualización upstream y seguridad | Piden versión, entorno, pasos y evidencia; sin secretos | S |
-| 7.3 | ADRs | Registrar decisiones de arquitectura/distribución/seguridad | Cada decisión tiene contexto, alternativas y consecuencias | S |
-| 7.4 | Checklist de release | Unificar cualificación, CI, RPM, notas y rollback | Una persona puede publicar siguiendo solo el repo | M |
-| 7.5 | Triaje mensual | Revisar roadmap, advisories, upstream y bloqueos | Estados actualizados; lo aplazado tiene razón escrita | S |
+| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño | Estado |
+|---|---|---|---|---|---|
+| 7.1 | CONTRIBUTING | Guía de entorno, pruebas, estilo y PR pequeños | Un colaborador nuevo puede ejecutar check desde cero | S | Hecho |
+| 7.2 | Plantillas de issues/PR | Bug, mejora, actualización upstream y seguridad | Piden versión, entorno, pasos y evidencia; sin secretos | S | Hecho |
+| 7.3 | ADRs | Registrar decisiones de arquitectura/distribución/seguridad | Cada decisión tiene contexto, alternativas y consecuencias | S | Hecho |
+| 7.4 | Checklist de release | Unificar cualificación, CI, RPM, notas y rollback | Una persona puede publicar siguiendo solo el repo | M | Hecho |
+| 7.5 | Triaje mensual | Revisar roadmap, advisories, upstream y bloqueos | Estados actualizados; lo aplazado tiene razón escrita | S | Hecho: proceso establecido y triaje inicial registrado |
 
 ## Registro de avance
 
@@ -179,7 +179,8 @@ Objetivo: que otra persona pueda contribuir sin depender del mantenedor original
 | 2026-11-13 | 4 | Notificaciones opcionales, matriz Fedora, ADR distribución y checksums CI | `docs/FEDORA.md`, `docs/FEDORA-MATRIX.md`, `docs/adr/0001-distribucion-rpm.md`; `npm run check` verde: 99/99 unitarias, 3/3 integración, 26/26 E2E |
 | 2026-11-13 | 5 | SBOM, licencias estrictas, ADRs de permisos/llavero y revisión de fronteras | `docs/SUPPLY-CHAIN.md`; 677 componentes objetivo, 0 licencias desconocidas; `npm run check` verde: 101/101 unitarias, 3/3 integración, 26/26 E2E |
 | 2026-11-13 | 6 | Paleta ampliada, favoritos/alias/rutas rotas, plantillas, backup de preferencias, es/en y línea base de rendimiento | `docs/PRODUCTIVITY.md`, `docs/PERFORMANCE.md`; `npm run check` verde: 110/110 unitarias, 3/3 integración, 30/30 E2E; baseline 3 runs con WebSocket |
+| 2026-11-13 | 7 | CONTRIBUTING, plantillas issue/PR, ADRs, checklist de release y triaje mensual | `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/`, `docs/adr/README.md`, `docs/RELEASE-CHECKLIST.md`, `docs/TRIAGE.md`; `qualify:runtime` 2026-11-13T01:00:01.572Z: auditoría 0+0, 110/110 unitarias, 3/3 integración, 30/30 E2E |
 
 ## Próximo paso inmediato
 
-Continuar con **Fase 7, comunidad y sostenibilidad**. Firma criptográfica, Fedora/Plasma real y upgrade RPM siguen bloqueados por dependencias externas.
+Mantenimiento recurrente: seguir `docs/TRIAGE.md` mensualmente o antes de una release; usar `docs/RELEASE-CHECKLIST.md` para publicar. No publicar con CI no verde ni sin revisión humana. Bloqueos externos vigentes: Fedora/Plasma real (1.8, 4.1, 4.4), firma criptográfica (5.3), COPR/llavero/UI de permisos según ADRs. La optimización de iframe/runtime queda aplazada hasta demostrar mejora sobre la línea base sin romper WebSocket/sesión.

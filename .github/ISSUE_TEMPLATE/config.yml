@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Vulnerabilidad de seguridad
+    url: https://github.com/JINROO1/DSH_F/security/advisories/new
+    about: Reporta vulnerabilidades en privado; no abras issue público.
+  - name: Guía de contribución
+    url: https://github.com/JINROO1/DSH_F/blob/main/CONTRIBUTING.md
+    about: Entorno, pruebas, estilo y PR pequeños antes de proponer cambios.

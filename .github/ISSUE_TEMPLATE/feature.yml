@@ -1,0 +1,59 @@
+name: Mejora
+description: Proponer una mejora pequeña de la capa Fedora/Electron
+labels: [enhancement]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Propón una idea concreta. No se aceptan cambios que parcheen el paquete oficial,
+        auto-update silencioso, telemetría obligatoria ni marketplace de plugins no oficiales.
+  - type: input
+    id: version
+    attributes:
+      label: Versión DSH_F / commit actual
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema o fricción
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Propuesta
+      description: Qué debería hacer la shell y qué no.
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - UI/accesibilidad
+        - Proyectos/plantillas
+        - Ajustes/preferencias
+        - Motor/runtime
+        - Fedora/KDE
+        - Seguridad/cadena de suministro
+        - Documentación/comunidad
+    validations:
+      required: true
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Criterios de aceptación y pruebas
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+  - type: checkboxes
+    id: safety
+    attributes:
+      label: Seguridad
+      options:
+        - label: No he incluido credenciales, tokens ni información privada sensible.
+          required: true

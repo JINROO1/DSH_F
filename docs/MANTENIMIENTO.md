@@ -5,7 +5,7 @@ Si la sesión se borra, el código, las pruebas, la documentación y el historia
 
 Repositorio: https://github.com/JINROO1/DSH_F
 
-Plan vigente: [ROADMAP.md](ROADMAP.md). Evidencia y límites de accesibilidad: [ACCESIBILIDAD.md](ACCESIBILIDAD.md).
+Plan vigente: [ROADMAP.md](ROADMAP.md). Evidencia y límites de accesibilidad: [ACCESIBILIDAD.md](ACCESIBILIDAD.md). Rutina mensual: [TRIAGE.md](TRIAGE.md). Publicación: [RELEASE-CHECKLIST.md](RELEASE-CHECKLIST.md). Contribuciones: [CONTRIBUTING.md](../CONTRIBUTING.md).
 
 ## Idea principal
 

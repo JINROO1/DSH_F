@@ -120,7 +120,11 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 ```
 
 - [Mantenimiento para principiantes](docs/MANTENIMIENTO.md)
+- [Contribuir](CONTRIBUTING.md)
 - [Roadmap por fases y subfases](docs/ROADMAP.md)
+- [Checklist de release](docs/RELEASE-CHECKLIST.md)
+- [Triaje mensual](docs/TRIAGE.md)
+- [Decisiones de arquitectura (ADRs)](docs/adr/README.md)
 - [Accesibilidad y evidencia de la Fase 1](docs/ACCESIBILIDAD.md)
 - [Onboarding y diagnóstico amigable](docs/ONBOARDING.md)
 - [Investigación upstream](docs/UPSTREAM.md)
@@ -141,6 +145,7 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 | Integración motor oficial | ✅ arranque, ajustes, workspace/sesión, restart, parada, CSS/fuentes del tema |
 | E2E Chromium + axe | ✅ 30 tests; matriz axe claro/oscuro, teclado/foco, paridad shell/agente, diagnóstico, productividad y responsive |
 | Auditoría dependencias | ✅ 0 vulnerabilidades en raíz y runtime (overrides documentados) |
+| Cualificación runtime | ✅ 2026-11-13T01:00:01.572Z: auditoría + typecheck/cobertura/build/integración/E2E |
 | Smoke Electron / RPM Fedora | 🔁 CI (`.github/workflows/ci.yml`); requiere binario Electron y Fedora/Plasma real |
 
 ## Licencia

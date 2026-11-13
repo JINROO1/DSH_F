@@ -48,9 +48,14 @@ El agente oficial hereda la misma paleta que la shell en ambos temas:
 
 ## Instalación en Fedora
 
+Descarga la última versión desde [**Releases**](https://github.com/JINROO1/DSH_F/releases/latest) (RPM, `SHA256SUMS`, `sbom.json`, `LICENSES.json`):
+
 ```bash
+sha256sum -c SHA256SUMS
 sudo dnf install -y ./dsh-fedora-0.1.0-x86_64.rpm
 ```
+
+El RPM no está firmado criptográficamente (ver [SUPPLY-CHAIN.md](docs/SUPPLY-CHAIN.md)); la verificación disponible es SHA-256 y la procedencia del CI. Notas de la versión actual: [v0.1.0](docs/releases/v0.1.0.md).
 
 Las releases `v*` publican el RPM automáticamente. También puedes construirlo tú:
 
@@ -124,6 +129,7 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 - [Roadmap por fases y subfases](docs/ROADMAP.md)
 - [Checklist de release](docs/RELEASE-CHECKLIST.md)
 - [Triaje mensual](docs/TRIAGE.md)
+- [Notas de release v0.1.0](docs/releases/v0.1.0.md)
 - [Decisiones de arquitectura (ADRs)](docs/adr/README.md)
 - [Accesibilidad y evidencia de la Fase 1](docs/ACCESIBILIDAD.md)
 - [Onboarding y diagnóstico amigable](docs/ONBOARDING.md)
@@ -147,6 +153,7 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 | Auditoría dependencias | ✅ 0 vulnerabilidades en raíz y runtime (overrides documentados) |
 | Cualificación runtime | ✅ 2026-11-13T01:00:01.572Z: auditoría + typecheck/cobertura/build/integración/E2E |
 | CI Fedora Edition | ✅ run 43470309423: verify + smoke Electron + RPM/checksums/SBOM/licencias + instalación en `fedora:latest` |
+| Release pública | ✅ [v0.1.0](https://github.com/JINROO1/DSH_F/releases/tag/v0.1.0) publicada por el run 43474950232 tras verify + fedora-install |
 | Smoke Electron / RPM Fedora | 🔁 CI (`.github/workflows/ci.yml`); requiere binario Electron y Fedora/Plasma real |
 
 ## Licencia

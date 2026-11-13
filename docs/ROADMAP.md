@@ -181,6 +181,7 @@ Objetivo: que otra persona pueda contribuir sin depender del mantenedor original
 | 2026-11-13 | 6 | Paleta ampliada, favoritos/alias/rutas rotas, plantillas, backup de preferencias, es/en y línea base de rendimiento | `docs/PRODUCTIVITY.md`, `docs/PERFORMANCE.md`; `npm run check` verde: 110/110 unitarias, 3/3 integración, 30/30 E2E; baseline 3 runs con WebSocket |
 | 2026-11-13 | 7 | CONTRIBUTING, plantillas issue/PR, ADRs, checklist de release y triaje mensual | `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/`, `docs/adr/README.md`, `docs/RELEASE-CHECKLIST.md`, `docs/TRIAGE.md`; `qualify:runtime` 2026-11-13T01:00:01.572Z: auditoría 0+0, 110/110 unitarias, 3/3 integración, 30/30 E2E |
 | 2026-11-13 | CI | Reparación de la cadena CI: Ubuntu 24.04, Playwright con deps, puerta separada, rutas preview relativas, smoke Electron, `--publish never` y maintainer RPM | CI run 43470309423 verde: verify 6m37s (auditoría/typecheck/cobertura/build/integración/E2E/cualificación/smoke/RPM/checksums/SBOM/licencias), fedora-install 53s; `docs/TRIAGE.md` |
+| 2026-11-13 | 4.6 | Primera release pública `v0.1.0` aprobada por el mantenedor: RPM descargable sin login junto a checksums, SBOM y licencias | https://github.com/JINROO1/DSH_F/releases/tag/v0.1.0; run 43474950232 verde (verify + fedora-install + release); notas en `docs/releases/v0.1.0.md`; firma sigue bloqueada (5.3) |
 
 ## Próximo paso inmediato
 

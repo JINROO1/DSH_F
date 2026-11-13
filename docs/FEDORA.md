@@ -7,7 +7,7 @@ DSH_F está diseñado para Fedora Linux con KDE Plasma (Wayland o X11). La venta
 ## Instalar desde RPM
 
 ```bash
-sudo dnf install -y ./dsh-fedora-0.1.0-x86_64.rpm
+sudo dnf install -y ./dsh-fedora-0.1.1-x86_64.rpm
 ```
 
 El RPM declara dependencias de Electron/Chromium (NSS, GTK3, GBM, ALSA, X11/Wayland libs). Se instala en `/opt` y registra `dsh-fedora.desktop`.
@@ -27,7 +27,7 @@ npm run qualify:runtime
 npm run package:fedora
 ```
 
-El artefacto queda en `release/dsh-fedora-0.1.0-x86_64.rpm`.
+El artefacto queda en `release/dsh-fedora-0.1.1-x86_64.rpm`.
 
 ## Integración Plasma
 
@@ -56,7 +56,7 @@ CI genera `SHA256SUMS` junto al RPM y lo verifica antes de subir artefactos/rele
 
 ```bash
 sha256sum -c SHA256SUMS
-sudo dnf install -y ./dsh-fedora-0.1.0-x86_64.rpm
+sudo dnf install -y ./dsh-fedora-0.1.1-x86_64.rpm
 ```
 
 La decisión de distribución está en [ADR 0001](adr/0001-distribucion-rpm.md): GitHub Releases primero; COPR/repositorio propio solo después de cuentas, firma y matriz Fedora real. La firma criptográfica de artefactos sigue pendiente de claves fuera del repo y revisión humana.

@@ -1,6 +1,6 @@
 {
   "name": "dsh-fedora",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "description": "DeepSeek Harness para Fedora KDE Plasma — edición de escritorio comunitaria",
   "license": "MIT",

@@ -59,7 +59,7 @@ function CommandPalette({ t, onClose, actions }: { t: Messages; onClose: () => v
 
 function WorkspaceDialog({ t, onClose, onSubmit }: { t: Messages; onClose: () => void; onSubmit: (path: string) => Promise<void> }) {
   const dialog = useRef<HTMLDialogElement>(null)
-  const [path, setPath] = useState('/home/user/DSH_F/.preview/workspaces/proyecto-demo')
+  const [path, setPath] = useState('.preview/workspaces/proyecto-demo')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   useEffect(() => {
@@ -93,7 +93,7 @@ function AliasDialog({ project, t, onClose, onSubmit }: { project: RecentWorkspa
 
 function TemplateDialog({ t, isPreview, onClose, onChooseParent, onSubmit }: { t: Messages; isPreview: boolean; onClose: () => void; onChooseParent: () => Promise<string | null>; onSubmit: (parentPath: string, name: string, template: TemplateKind) => Promise<void> }) {
   const dialog = useRef<HTMLDialogElement>(null)
-  const [parentPath, setParentPath] = useState(isPreview ? '/home/user/DSH_F/.preview/workspaces' : '')
+  const [parentPath, setParentPath] = useState(isPreview ? '.preview/workspaces' : '')
   const [name, setName] = useState('')
   const [template, setTemplate] = useState<TemplateKind>('empty')
   const [busy, setBusy] = useState(false)

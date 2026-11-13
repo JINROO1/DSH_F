@@ -3,7 +3,6 @@ import AxeBuilder from '@axe-core/playwright'
 import { rm } from 'node:fs/promises'
 import { join } from 'node:path'
 
-const demo = '/home/user/DSH_F/.preview/workspaces/proyecto-demo'
 const templateDir = join(process.cwd(), '.preview/workspaces/plantilla-e2e')
 
 test.beforeEach(async ({ page }) => {

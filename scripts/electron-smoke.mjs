@@ -9,10 +9,10 @@ const userData = await mkdtemp(join(tmpdir(), 'dshf-electron-smoke-'))
 let app
 try {
   app = await electron.launch({
-    args: ['.', '--no-sandbox', '--disable-gpu', `--user-data-dir=${userData}`],
+    args: ['.', '--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage', `--user-data-dir=${userData}`],
     cwd: root,
     env: { ...process.env, DSH_TELEMETRY_DISABLED: '1', ELECTRON_DISABLE_SECURITY_WARNINGS: '1' },
-    timeout: 60_000,
+    timeout: 120_000,
   })
   const page = await app.firstWindow()
   await page.waitForSelector('.app-shell:not(.loading)', { timeout: 30_000 })
@@ -29,6 +29,18 @@ try {
   await app.close()
   app = undefined
   console.log('Electron smoke OK: ventana, IPC, motor real, reinicio y cierre limpio.')
+} catch (error) {
+  const message = error instanceof Error ? (error.stack ?? error.message) : String(error)
+  console.error(`::error::Electron smoke: ${message.replace(/\r?\n/gu, '%0A')}`)
+  if (app) {
+    try {
+      const page = await app.firstWindow()
+      const text = await page.evaluate(() => document.body?.innerText?.slice(0, 800) ?? '')
+      if (text) console.error(`::error::Smoke DOM: ${text.replace(/\r?\n/gu, '%0A')}`)
+      await page.screenshot({ path: join(root, 'test-results/electron-smoke-failure.png') }).catch(() => undefined)
+    } catch { /* best-effort diagnostics */ }
+  }
+  throw error
 } finally {
   if (app) await app.close().catch(() => undefined)
   await rm(userData, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 })

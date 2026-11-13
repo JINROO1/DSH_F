@@ -28,6 +28,7 @@
     "licenses": "node scripts/licenses.mjs",
     "upstream:prepare": "node scripts/prepare-upstream.mjs",
     "updates:check": "npm run build && node scripts/check-updates.mjs",
+    "measure:performance": "npm run build && node scripts/measure-performance.mjs",
     "qualify:runtime": "node scripts/qualify-runtime.mjs",
     "source:archive": "node scripts/source-archive.mjs"
   },

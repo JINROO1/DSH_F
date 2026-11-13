@@ -5,12 +5,13 @@
 | Capa | Comando | Qué verifica |
 |---|---|---|
 | Tipos | `npm run typecheck` | TypeScript estricto en main, preload, renderer, tests y configs. |
-| Unitarias | `npm run test` | Contratos Zod, fence de seguridad, cookies, tickets, proxy HTTP/WS, fuentes del tema, persistencia atómica, logs/redacción, ciclo de vida del runtime, autostart XDG, paridad CSS shell/agente, contraste WCAG de tokens/gradientes y herramientas de actualización upstream. |
+| Unitarias | `npm run test` | Contratos Zod, fence de seguridad, cookies, tickets, proxy HTTP/WS, fuentes del tema, persistencia atómica, logs/redacción, ciclo de vida del runtime, autostart XDG, paridad CSS shell/agente, contraste WCAG, actualizaciones, notificaciones, SBOM/licencias, plantillas, disponibilidad de rutas y backup de preferencias. |
 | Cobertura | `npm run test:coverage` | Umbrales: 80% líneas/funciones/statements y 70% branches en la capa main crítica. |
 | Integración | `npm run test:integration` | Arranca el motor oficial real con el Node incluido; sincroniza ajustes; sirve la UI decorada; crea workspace/sesión; reinicia y conserva estado; libera puertos al parar. |
-| E2E navegador | `npm run test:e2e` | Playwright + axe-core: matriz axe de 6 escenarios en claro/oscuro, teclado/foco/sistema/movimiento, portada, paleta, tema/idioma, proyectos, iframe Harness, paridad shell/agente, diagnóstico/exportación, stop/restart, responsive y enlaces externos. |
+| E2E navegador | `npm run test:e2e` | Playwright + axe-core: matriz axe de 6 escenarios en claro/oscuro, teclado/foco/sistema/movimiento, portada, paleta, tema/idioma, proyectos, iframe Harness, paridad shell/agente, diagnóstico/exportación, stop/restart, productividad (favoritos/alias/plantillas/preferencias), responsive y enlaces externos. |
 | Smoke Electron | `npm run test:electron` | Ventana nativa, IPC, motor real, reinicio y cierre limpio. Requiere binario Electron y display (CI usa `xvfb-run`). |
 | Auditoría | `npm run audit:dependencies` | `npm audit --omit=dev` en raíz y runtime. |
+| Rendimiento | `npm run measure:performance` | Línea base repetible de arranque/memoria con motor real; exige WebSocket y no aplica optimizaciones. |
 | Completa | `npm run check` | Typecheck + cobertura + build + integración + E2E. |
 | Cualificación de release | `npm run qualify:runtime` | Auditoría + `check`; escribe `.packaging/qualification.json` ligado al manifiesto, lockfile, `upstream.json` y CSS de tema. Obligatorio antes de `package:fedora`. |
 
@@ -42,4 +43,4 @@ La vista previa (`npm run preview`) usa el mismo runtime, puente y renderer, per
 
 ## CI
 
-`.github/workflows/ci.yml` ejecuta `qualify:runtime` (auditoría + `check`), smoke Electron con Xvfb, empaquetado RPM, validación de metadatos RPM e instalación del RPM en un contenedor `fedora:latest`. Las releases `v*` publican el RPM como asset.
+`.github/workflows/ci.yml` ejecuta `qualify:runtime` (auditoría + `check`), smoke Electron con Xvfb, empaquetado RPM, checksums SHA-256, SBOM, licencias `--strict`, validación de metadatos RPM e instalación del RPM en un contenedor `fedora:latest`. Las releases `v*` publican RPM, `SHA256SUMS`, `sbom.json` y `LICENSES.json`; la firma criptográfica sigue bloqueada.

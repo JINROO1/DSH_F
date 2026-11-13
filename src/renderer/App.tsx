@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { Activity, ArrowDownLeft, ArrowRight, BookOpen, Check, ChevronRight, CircleHelp, Code2, Command, Copy, Cpu, Download, Folder, FolderOpen, Github, Home, Layers3, LoaderCircle, Monitor, Moon, MoreHorizontal, PlugZap, Plus, RefreshCw, Search, Settings2, ShieldCheck, Sparkles, Square, Sun, Terminal, Trash2, X, Zap } from 'lucide-react'
-import type { DesktopApi, DesktopState, Diagnostics, EngineStatus, RecentWorkspace, Settings, SettingsPatch, UpdateCheck } from '../shared/contracts.js'
+import { Activity, ArrowDownLeft, ArrowRight, BookOpen, Check, ChevronRight, CircleHelp, Code2, Command, Copy, Cpu, Download, FilePlus, Folder, FolderOpen, Github, Home, Layers3, LoaderCircle, Monitor, Moon, MoreHorizontal, Pencil, PlugZap, Plus, RefreshCw, Search, Settings2, ShieldCheck, Sparkles, Square, Star, Sun, Terminal, Trash2, Upload, X, Zap } from 'lucide-react'
+import type { DesktopApi, DesktopState, Diagnostics, EngineStatus, PreferencesImportPreview, RecentWorkspace, Settings, SettingsPatch, TemplateKind, UpdateCheck } from '../shared/contracts.js'
 import { DEFAULT_SETTINGS, UPSTREAM_NODE_VERSION, UPSTREAM_VERSION, errorMessage } from '../shared/contracts.js'
 import { messages, type Messages } from './i18n.js'
 
@@ -24,8 +24,9 @@ function Toggle({ checked, onChange, label, description, disabled }: { checked: 
 function EmptyProjects({ t, onOpen }: { t: Messages; onOpen: () => void }) {
   return <div className="empty-projects"><div className="empty-icon"><FolderOpen size={25} /></div><div><strong>{t.emptyProjects}</strong><p>{t.emptyProjectsDescription}</p></div><Button onClick={onOpen}><Plus size={16} />{t.openProject}</Button></div>
 }
-function ProjectRow({ project, t, onOpen, onForget }: { project: RecentWorkspace; t: Messages; onOpen: () => void; onForget?: () => void }) {
-  return <div className="project-row"><button className="project-main" onClick={onOpen}><span className="project-icon"><Folder size={19} /></span><span className="project-copy"><strong>{project.name}</strong><span title={project.path}>{project.path}</span></span><ArrowRight size={17} className="project-arrow" /></button>{onForget && <button className="icon-button subtle" aria-label={`${t.forget}: ${project.name}`} title={t.forgetHint} onClick={onForget}><Trash2 size={16} /></button>}</div>
+function ProjectRow({ project, t, missing, onOpen, onForget, onFavorite, onAlias }: { project: RecentWorkspace; t: Messages; missing?: boolean; onOpen: () => void; onForget?: () => void; onFavorite?: () => void; onAlias?: () => void }) {
+  const label = project.alias || project.name
+  return <div className={`project-row ${missing ? 'missing' : ''}`}><button className="project-main" onClick={onOpen}><span className="project-icon"><Folder size={19} /></span><span className="project-copy"><strong>{label}{project.favorite && <Star size={13} className="favorite-mark" aria-label={t.favorite} />}</strong><span title={project.path}>{project.path}</span>{missing && <span className="missing-label">{t.missingPath}</span>}</span><ArrowRight size={17} className="project-arrow" /></button><div className="project-actions">{onFavorite && <button className={`icon-button subtle favorite ${project.favorite ? 'on' : ''}`} aria-pressed={!!project.favorite} aria-label={`${project.favorite ? t.unfavorite : t.favorite}: ${label}`} title={project.favorite ? t.unfavorite : t.favorite} onClick={onFavorite}><Star size={16} /></button>}{onAlias && <button className="icon-button subtle" aria-label={`${t.editAlias}: ${label}`} title={t.editAlias} onClick={onAlias}><Pencil size={16} /></button>}{onForget && <button className="icon-button subtle" aria-label={`${t.forget}: ${label}`} title={t.forgetHint} onClick={onForget}><Trash2 size={16} /></button>}</div></div>
 }
 function ActionCard({ icon, title, description, onClick, accent }: { icon: React.ReactNode; title: string; description: string; onClick: () => void; accent: string }) {
   return <button className="action-card" onClick={onClick}><span className={`action-icon ${accent}`}>{icon}</span><span className="action-card-copy"><strong>{title}</strong><span>{description}</span></span><ArrowUpRightIcon /></button>
@@ -73,6 +74,86 @@ function WorkspaceDialog({ t, onClose, onSubmit }: { t: Messages; onClose: () =>
   </form></dialog>
 }
 
+function AliasDialog({ project, t, onClose, onSubmit }: { project: RecentWorkspace; t: Messages; onClose: () => void; onSubmit: (alias: string) => Promise<void> }) {
+  const dialog = useRef<HTMLDialogElement>(null)
+  const [alias, setAlias] = useState(project.alias ?? '')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  useEffect(() => {
+    const trigger = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    dialog.current?.showModal()
+    return () => { if (trigger?.isConnected) trigger.focus() }
+  }, [])
+  return <dialog ref={dialog} className="workspace-dialog" aria-label={t.editAlias} onCancel={onClose} onClick={event => { if (event.target === event.currentTarget) onClose() }}><form onSubmit={async event => { event.preventDefault(); setBusy(true); setError(''); try { await onSubmit(alias); onClose() } catch (error) { setError(errorMessage(error)) } finally { setBusy(false) } }}>
+    <div className="dialog-heading"><span className="action-icon blue"><Pencil size={22} /></span><button type="button" className="icon-button" aria-label={t.close} onClick={onClose}><X size={19} /></button></div>
+    <h2>{t.editAlias}</h2><p>{t.aliasHint}</p><label htmlFor="project-alias">{t.alias}</label><input id="project-alias" value={alias} onChange={event => setAlias(event.target.value)} maxLength={120} autoFocus />
+    {error && <p className="form-error" role="alert">{error}</p>}<div className="dialog-actions"><Button type="button" onClick={onClose}>{t.cancel}</Button><Button type="submit" variant="primary" disabled={busy}>{busy ? <LoaderCircle className="spin" size={16} /> : <Check size={16} />}{t.save}</Button></div>
+  </form></dialog>
+}
+
+function TemplateDialog({ t, isPreview, onClose, onChooseParent, onSubmit }: { t: Messages; isPreview: boolean; onClose: () => void; onChooseParent: () => Promise<string | null>; onSubmit: (parentPath: string, name: string, template: TemplateKind) => Promise<void> }) {
+  const dialog = useRef<HTMLDialogElement>(null)
+  const [parentPath, setParentPath] = useState(isPreview ? '/home/user/DSH_F/.preview/workspaces' : '')
+  const [name, setName] = useState('')
+  const [template, setTemplate] = useState<TemplateKind>('empty')
+  const [busy, setBusy] = useState(false)
+  const [error, setError] = useState('')
+  useEffect(() => {
+    const trigger = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    dialog.current?.showModal()
+    return () => { if (trigger?.isConnected) trigger.focus() }
+  }, [])
+  const options: { value: TemplateKind; label: string }[] = [{ value: 'empty', label: t.templateEmpty }, { value: 'node', label: t.templateNode }, { value: 'python', label: t.templatePython }, { value: 'docs', label: t.templateDocs }, { value: 'scripts', label: t.templateScripts }]
+  return <dialog ref={dialog} className="workspace-dialog" aria-label={t.createTemplate} onCancel={onClose} onClick={event => { if (event.target === event.currentTarget) onClose() }}><form onSubmit={async event => { event.preventDefault(); setBusy(true); setError(''); try { await onSubmit(parentPath, name, template); onClose() } catch (error) { setError(errorMessage(error)) } finally { setBusy(false) } }}>
+    <div className="dialog-heading"><span className="action-icon green"><FilePlus size={22} /></span><button type="button" className="icon-button" aria-label={t.close} onClick={onClose}><X size={19} /></button></div>
+    <h2>{t.createTemplate}</h2><p>{t.templateDescription}</p>
+    <label htmlFor="template-name">{t.projectName}</label><input id="template-name" value={name} onChange={event => setName(event.target.value)} required maxLength={120} autoFocus />
+    <label htmlFor="template-kind">{t.template}</label><select id="template-kind" value={template} onChange={event => setTemplate(event.target.value as TemplateKind)}>{options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}</select>
+    <label htmlFor="template-parent">{t.parentFolder}</label><div className="path-picker"><input id="template-parent" value={parentPath} onChange={event => setParentPath(event.target.value)} readOnly={!isPreview} required />{!isPreview && <Button type="button" onClick={() => { void onChooseParent().then(path => { if (path) setParentPath(path) }).catch(error => setError(errorMessage(error))) }}>{t.chooseFolder}</Button>}</div>
+    {error && <p className="form-error" role="alert">{error}</p>}<div className="dialog-actions"><Button type="button" onClick={onClose}>{t.cancel}</Button><Button type="submit" variant="primary" disabled={busy || !parentPath.trim() || !name.trim()}>{busy ? <LoaderCircle className="spin" size={16} /> : <Plus size={16} />}{t.createTemplate}</Button></div>
+  </form></dialog>
+}
+
+function settingLabel(key: keyof Settings, t: Messages): string {
+  switch (key) {
+    case 'theme': return t.theme
+    case 'language': return t.language
+    case 'closeToTray': return t.tray
+    case 'confirmQuit': return t.confirm
+    case 'launchOnLogin': return t.autostart
+    case 'reduceMotion': return t.motion
+    case 'onboardingDismissed': return t.onboardingTitle
+    case 'notificationsEnabled': return t.notifications
+  }
+}
+function settingValue(key: keyof Settings, value: Settings[keyof Settings], t: Messages): string {
+  if (typeof value === 'boolean') return value ? t.enabled : t.disabled
+  if (key === 'theme') return t[value as Settings['theme']]
+  if (key === 'language') return value === 'es' ? 'Español' : 'English'
+  return String(value)
+}
+function PreferencesImportDialog({ t, current, onClose, onPreview, onApply }: { t: Messages; current: Settings; onClose: () => void; onPreview: (json: string) => Promise<PreferencesImportPreview>; onApply: (json: string) => Promise<void> }) {
+  const dialog = useRef<HTMLDialogElement>(null)
+  const [json, setJson] = useState('')
+  const [preview, setPreview] = useState<PreferencesImportPreview | null>(null)
+  const [busy, setBusy] = useState('')
+  const [error, setError] = useState('')
+  useEffect(() => {
+    const trigger = document.activeElement instanceof HTMLElement ? document.activeElement : null
+    dialog.current?.showModal()
+    return () => { if (trigger?.isConnected) trigger.focus() }
+  }, [])
+  const review = async (): Promise<void> => { setBusy('preview'); setError(''); try { setPreview(await onPreview(json)) } catch (error) { setPreview(null); setError(errorMessage(error)) } finally { setBusy('') } }
+  const apply = async (): Promise<void> => { setBusy('apply'); setError(''); try { await onApply(json); onClose() } catch (error) { setError(errorMessage(error)) } finally { setBusy('') } }
+  return <dialog ref={dialog} className="workspace-dialog preferences-dialog" aria-label={t.preferencesImport} onCancel={onClose} onClick={event => { if (event.target === event.currentTarget) onClose() }}>
+    <div className="dialog-heading"><span className="action-icon violet"><Upload size={22} /></span><button type="button" className="icon-button" aria-label={t.close} onClick={onClose}><X size={19} /></button></div>
+    <h2>{t.preferencesImport}</h2><p>{t.preferencesImportHint}</p><label htmlFor="preferences-json">{t.preferencesJson}</label><textarea id="preferences-json" value={json} onChange={event => { setJson(event.target.value); setPreview(null) }} maxLength={65_536} rows={8} autoFocus />
+    <div className="dialog-actions"><Button type="button" onClick={onClose}>{t.cancel}</Button><Button type="button" onClick={() => { void review() }} disabled={!!busy || !json.trim()}>{busy === 'preview' ? <LoaderCircle className="spin" size={16} /> : <Search size={16} />}{t.preferencesReview}</Button></div>
+    {preview && <div className="preferences-preview" aria-live="polite"><h3>{t.preferencesChanges}</h3>{preview.changes.length ? <ul>{preview.changes.map(key => <li key={key}><strong>{settingLabel(key, t)}</strong><span>{settingValue(key, current[key], t)} → {settingValue(key, preview.settings[key], t)}</span></li>)}</ul> : <p>{t.preferencesNoChanges}</p>}<div className="dialog-actions"><Button type="button" variant="primary" onClick={() => { void apply() }} disabled={!!busy}>{busy === 'apply' ? <LoaderCircle className="spin" size={16} /> : <Check size={16} />}{t.preferencesApply}</Button></div></div>}
+    {error && <p className="form-error" role="alert">{error}</p>}
+  </dialog>
+}
+
 function OnboardingCard({ t, statusText, phase, busy, onOpenProject, onConfigureModel, onDiagnostics, onDismiss }: { t: Messages; statusText: string; phase: EngineStatus['phase']; busy: boolean; onOpenProject: () => void; onConfigureModel: () => void; onDiagnostics: () => void; onDismiss: () => void }) {
   return <section className="onboarding-card" aria-labelledby="onboarding-title">
     <div className="onboarding-heading"><div><h2 id="onboarding-title">{t.onboardingTitle}</h2><p>{t.onboardingDescription}</p></div><Button variant="ghost" onClick={onDismiss} disabled={busy}>{t.onboardingDismiss}</Button></div>
@@ -105,6 +186,10 @@ export function App() {
   const [fatal, setFatal] = useState('')
   const [palette, setPalette] = useState(false)
   const [workspaceDialog, setWorkspaceDialog] = useState(false)
+  const [templateDialog, setTemplateDialog] = useState(false)
+  const [aliasProject, setAliasProject] = useState<RecentWorkspace | null>(null)
+  const [preferencesDialog, setPreferencesDialog] = useState(false)
+  const [availability, setAvailability] = useState<Record<string, boolean>>({})
   const [workspaceResolver, setWorkspaceResolver] = useState<((value: RecentWorkspace | null) => void) | null>(null)
   const [toasts, setToasts] = useState<Toast[]>([])
   const [busy, setBusy] = useState('')
@@ -192,7 +277,9 @@ export function App() {
   const stop = async (): Promise<void> => { await perform('engine', () => api.stopEngine(), t.stoppedToast) }
   const exportDiagnostics = async (): Promise<void> => { await perform('export', () => api.exportDiagnostics(), t.exported) }
   const openAgent = (hint?: string): void => { setView('agent'); if (hint) toast(hint) }
-  const filteredProjects = useMemo(() => state.recent.filter(project => `${project.name} ${project.path}`.toLocaleLowerCase().includes(filter.toLocaleLowerCase())), [state.recent, filter])
+  const sortedProjects = useMemo(() => [...state.recent].sort((a, b) => Number(b.favorite ?? false) - Number(a.favorite ?? false)), [state.recent])
+  const missingCount = state.recent.filter(project => availability[project.path]).length
+  const filteredProjects = useMemo(() => sortedProjects.filter(project => `${project.alias ?? ''} ${project.name} ${project.path}`.toLocaleLowerCase().includes(filter.toLocaleLowerCase())), [sortedProjects, filter])
   const filteredLog = useMemo(() => {
     const query = logFilter.toLocaleLowerCase()
     return (diagnostics?.log ?? '').split('\n').filter(line => {
@@ -212,13 +299,28 @@ export function App() {
     const result = await perform('updates', () => api.checkUpdates())
     if (result) setUpdates(result as UpdateCheck)
   }
+  const exportPreferences = async (): Promise<void> => { await perform('preferences-export', () => api.exportPreferences(), t.preferencesExported) }
+  const checkPaths = async (): Promise<void> => {
+    await perform('availability', async () => {
+      const result = await api.checkWorkspaces()
+      setAvailability(Object.fromEntries(result.map(item => [item.path, item.missing])))
+    }, t.pathsChecked)
+  }
+  const pruneMissing = async (): Promise<void> => {
+    await perform('prune', async () => { setState(await api.pruneMissingWorkspaces()); setAvailability({}) }, t.missingPruned)
+  }
   const actions = [
     { id: 'home', label: t.home, icon: <Home size={18} />, run: () => setView('home'), shortcut: 'Alt 1' },
     { id: 'agent', label: t.agent, icon: <Sparkles size={18} />, run: () => setView('agent'), shortcut: 'Alt 2' },
     { id: 'open', label: t.openProject, icon: <FolderOpen size={18} />, run: () => { void openProject() }, shortcut: 'Ctrl O' },
     { id: 'projects', label: t.projects, icon: <Folder size={18} />, run: () => setView('projects') },
     { id: 'settings', label: t.settings, icon: <Settings2 size={18} />, run: () => setView('settings'), shortcut: 'Ctrl ,' },
+    { id: 'theme-light', label: t.paletteLight, icon: <Sun size={18} />, run: () => { void updateSettings({ theme: 'light' }) } },
+    { id: 'theme-dark', label: t.paletteDark, icon: <Moon size={18} />, run: () => { void updateSettings({ theme: 'dark' }) } },
+    { id: 'theme-system', label: t.paletteSystem, icon: <Monitor size={18} />, run: () => { void updateSettings({ theme: 'system' }) } },
+    { id: 'template', label: t.createTemplate, icon: <FilePlus size={18} />, run: () => setTemplateDialog(true) },
     { id: 'restart', label: t.restart, icon: <RefreshCw size={18} />, run: () => { void restart() } },
+    { id: 'diagnostics-view', label: t.onboardingOpenDiagnostics, icon: <Activity size={18} />, run: () => setView('diagnostics') },
     { id: 'diagnostics', label: t.export, icon: <Download size={18} />, run: () => { void exportDiagnostics() } },
     { id: 'docs', label: t.documentation, icon: <BookOpen size={18} />, run: () => { void api.openExternal('documentation') } },
   ]
@@ -232,7 +334,7 @@ export function App() {
       <button className="sidebar-search" onClick={() => setPalette(true)}><Search size={16} /><span>{t.search}</span><kbd>⌘ K</kbd></button>
       <nav className="primary-nav" aria-label={t.actions}>{nav.map(item => <button key={item.id} className={`nav-item ${view === item.id ? 'active' : ''}`} aria-label={item.label} aria-current={view === item.id ? 'page' : undefined} onClick={() => setView(item.id)}><item.icon size={19} /><span>{item.label}</span>{item.id === 'agent' && <span className={`nav-dot ${status.phase}`} />}</button>)}</nav>
       <div className="sidebar-section"><span>{t.recent}</span><button className="icon-button tiny" aria-label={t.openProject} onClick={() => { void openProject() }}><Plus size={15} /></button></div>
-      <div className="sidebar-projects">{state.recent.slice(0, 4).map(project => <button key={project.path} onClick={() => { void openRecent(project) }} title={project.path}><Folder size={15} /><span>{project.name}</span></button>)}{state.recent.length === 0 && <p className="sidebar-empty">{t.emptyProjects}</p>}</div>
+      <div className="sidebar-projects">{sortedProjects.slice(0, 4).map(project => <button key={project.path} onClick={() => { void openRecent(project) }} title={project.path}><Folder size={15} /><span>{project.alias || project.name}</span>{project.favorite && <Star size={12} className="favorite-mark" aria-label={t.favorite} />}</button>)}{state.recent.length === 0 && <p className="sidebar-empty">{t.emptyProjects}</p>}</div>
       <div className="sidebar-bottom"><div className="local-card"><ShieldCheck size={18} /><div><strong>{t.localOnly}</strong><span>{t.privacyDescription}</span></div></div><button className={`nav-item ${view === 'settings' ? 'active' : ''}`} aria-label={t.settings} onClick={() => setView('settings')}><Settings2 size={18} /><span>{t.settings}</span></button><button className={`nav-item ${view === 'diagnostics' ? 'active' : ''}`} aria-label={t.diagnostics} onClick={() => setView('diagnostics')}><Activity size={18} /><span>{t.diagnostics}</span></button><div className="sidebar-version"><span className="fedora-mark">f</span><span>Fedora Edition</span><span>v0.1.0</span></div></div>
     </aside>
     <div className="main-shell">
@@ -243,16 +345,17 @@ export function App() {
           <section className="hero" aria-labelledby="hero-title"><div className="hero-copy"><div className="eyebrow"><span />{t.eyebrow}</div><h1 id="hero-title">{t.hero1}<br /><span>{t.hero2}</span></h1><p>{t.heroDescription}</p><div className="hero-actions"><Button variant="primary" onClick={() => { void openProject() }} disabled={!!busy}><FolderOpen size={17} />{t.openProject}<ArrowRight size={16} /></Button><Button variant="ghost" onClick={() => openAgent(t.openAgentHint)}><Plus size={17} />{t.newWorkspace}</Button></div><div className="hero-footnote"><ShieldCheck size={14} />{t.privacyDescription}</div></div><div className="hero-art" aria-hidden="true"><div className="orbit orbit-one" /><div className="orbit orbit-two" /><div className="orbit orbit-three" /><div className="art-glow" /><div className="core-mark"><img src="./assets/icon.svg" alt="" /></div><div className="floating-chip chip-code"><Code2 size={19} /><span>{t.codeTitle}</span><span className="chip-dot" /></div><div className="floating-chip chip-terminal"><Terminal size={18} /><span>Terminal</span></div><div className="floating-chip chip-files"><Layers3 size={18} /><span>{t.projects}</span></div><div className="art-node node-one" /><div className="art-node node-two" /><div className="art-node node-three" /></div></section>
           {!state.settings.onboardingDismissed && <OnboardingCard t={t} statusText={statusText} phase={status.phase} busy={!!busy} onOpenProject={() => { void openProject() }} onConfigureModel={() => openAgent(t.configureModelHint)} onDiagnostics={() => setView('diagnostics')} onDismiss={() => { void updateSettings({ onboardingDismissed: true }) }} />}
           <section className="quick-section" aria-labelledby="quick-title"><div className="section-heading"><div><h2 id="quick-title">{t.startYourWay}</h2><p>{t.startDescription}</p></div><span className="keyboard-hint"><kbd>Ctrl</kbd><kbd>K</kbd> {t.shortcutHint}</span></div><div className="action-grid"><ActionCard icon={<Code2 size={23} />} title={t.codeTitle} description={t.codeDescription} accent="blue" onClick={() => { void openProject() }} /><ActionCard icon={<Sparkles size={23} />} title={t.createTitle} description={t.createDescription} accent="violet" onClick={() => openAgent(t.openAgentHint)} /><ActionCard icon={<PlugZap size={23} />} title={t.connectTitle} description={t.connectDescription} accent="green" onClick={() => openAgent(t.configureModelHint)} /></div></section>
-          <section className="recent-section" aria-labelledby="recent-title"><div className="section-heading"><div><h2 id="recent-title">{t.recent}</h2><p>{t.recentDescription}</p></div><button className="text-button" onClick={() => setView('projects')}>{t.seeAll}<ArrowRight size={15} /></button></div>{state.recent.length ? <div className="project-list">{state.recent.slice(0, 3).map(project => <ProjectRow key={project.path} project={project} t={t} onOpen={() => { void openRecent(project) }} />)}</div> : <EmptyProjects t={t} onOpen={() => { void openProject() }} />}</section>
+          <section className="recent-section" aria-labelledby="recent-title"><div className="section-heading"><div><h2 id="recent-title">{t.recent}</h2><p>{t.recentDescription}</p></div><button className="text-button" onClick={() => setView('projects')}>{t.seeAll}<ArrowRight size={15} /></button></div>{state.recent.length ? <div className="project-list">{sortedProjects.slice(0, 3).map(project => <ProjectRow key={project.path} project={project} t={t} missing={!!availability[project.path]} onOpen={() => { void openRecent(project) }} />)}</div> : <EmptyProjects t={t} onOpen={() => { void openProject() }} />}</section>
           <footer className="home-footer"><span><ShieldCheck size={15} />{t.privacy}</span><span><Cpu size={15} />{t.official} {UPSTREAM_VERSION}</span><span><Monitor size={15} />{t.plasma}</span></footer>
         </div>}
         <div className="agent-view" hidden={view !== 'agent'}><div className="agent-toolbar"><div><h2>{t.agent}</h2><p>{t.agentDescription}</p></div><div className="toolbar-buttons"><Button variant="ghost" onClick={() => setView('home')}><Home size={15} />{t.backHome}</Button><Button onClick={() => { void restart() }} disabled={!!busy}><RefreshCw size={15} className={busy === 'engine' ? 'spin' : ''} />{t.restart}</Button></div></div><div className="engine-surface">
           {status.phase !== 'ready' && <div className="engine-placeholder"><div className={`engine-state-icon ${status.phase}`}>{status.phase === 'error' ? <Zap size={30} /> : status.phase === 'stopped' ? <Square size={27} /> : <LoaderCircle size={32} className="spin" />}</div><h2>{status.phase === 'error' ? t.errorTitle : status.phase === 'stopped' ? t.stopped : t.loadingTitle}</h2><p>{status.phase === 'error' ? status.message || t.errorDescription : status.phase === 'stopped' ? t.engineDescription : t.loadingDescription}</p><div className="hero-actions"><Button variant="primary" onClick={() => { void restart() }} disabled={!!busy}><RefreshCw size={16} />{status.phase === 'error' ? t.retry : t.restart}</Button><Button onClick={() => setView('diagnostics')}><Activity size={16} />{t.diagnostics}</Button></div></div>}
           {frameSrc && <iframe title={t.agent} src={frameSrc} className={`harness-frame ${status.phase === 'ready' && frameLoaded ? 'visible' : ''}`} onLoad={() => setFrameLoaded(true)} sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-downloads" allow="clipboard-read; clipboard-write" />}
         </div><div className="agent-statusbar"><span><StatusDot phase={status.phase} />{statusText}</span><span><ShieldCheck size={13} />{t.permissions}</span><span>Harness {UPSTREAM_VERSION}</span></div></div>
-        {view === 'projects' && <div className="page projects-page"><div className="page-heading"><div><div className="eyebrow">{t.workspace}</div><h1>{t.projects}</h1><p>{t.projectsDescription}</p></div><Button variant="primary" onClick={() => { void openProject() }} disabled={!!busy}><Plus size={17} />{t.openProject}</Button></div><div className="project-filter"><Search size={17} /><input aria-label={t.filterProjects} placeholder={t.filterProjects} value={filter} onChange={event => setFilter(event.target.value)} /></div>{filteredProjects.length ? <div className="project-list full">{filteredProjects.map(project => <ProjectRow key={project.path} project={project} t={t} onOpen={() => { void openRecent(project) }} onForget={() => { void perform('forget', async () => { setState(await api.forgetWorkspace(project.path)) }, t.forgotten) }} />)}</div> : <EmptyProjects t={t} onOpen={() => { void openProject() }} />}<div className="info-note"><ShieldCheck size={18} /><p>{t.forgetHint}</p></div></div>}
+        {view === 'projects' && <div className="page projects-page"><div className="page-heading"><div><div className="eyebrow">{t.workspace}</div><h1>{t.projects}</h1><p>{t.projectsDescription}</p></div><div className="toolbar-buttons"><Button onClick={() => setTemplateDialog(true)} disabled={!!busy}><FilePlus size={17} />{t.createTemplate}</Button><Button variant="primary" onClick={() => { void openProject() }} disabled={!!busy}><Plus size={17} />{t.openProject}</Button></div></div><div className="project-filter"><Search size={17} /><input aria-label={t.filterProjects} placeholder={t.filterProjects} value={filter} onChange={event => setFilter(event.target.value)} /></div><div className="project-tools"><Button onClick={() => { void checkPaths() }} disabled={!!busy}><Search size={15} />{t.checkPaths}</Button><Button onClick={() => { void pruneMissing() }} disabled={!!busy || missingCount === 0}><Trash2 size={15} />{t.pruneMissing}</Button>{missingCount > 0 && <span className="form-error">{t.missingDetected}: {missingCount}</span>}</div>{filteredProjects.length ? <div className="project-list full">{filteredProjects.map(project => <ProjectRow key={project.path} project={project} t={t} missing={!!availability[project.path]} onOpen={() => { void openRecent(project) }} onFavorite={() => { void perform('favorite', async () => { setState(await api.favoriteWorkspace(project.path, !project.favorite)) }, t.favoriteSaved) }} onAlias={() => setAliasProject(project)} onForget={() => { void perform('forget', async () => { setState(await api.forgetWorkspace(project.path)) }, t.forgotten) }} />)}</div> : <EmptyProjects t={t} onOpen={() => { void openProject() }} />}<div className="info-note"><ShieldCheck size={18} /><p>{t.forgetHint} {t.templateSafety}</p></div></div>}
         {view === 'settings' && <div className="page settings-page"><div className="page-heading"><div><div className="eyebrow">{t.workspace}</div><h1>{t.settings}</h1><p>{t.appearanceDescription}</p></div></div><section className="settings-card"><div className="settings-card-heading"><span className="action-icon blue"><Sun size={20} /></span><div><h2>{t.appearance}</h2><p>{t.appearanceDescription}</p></div></div><div className="setting-row"><div><strong>{t.theme}</strong><p>{t.appearanceDescription}</p></div><div className="segmented" role="group" aria-label={t.theme}>{([{ value: 'system', icon: Monitor, label: t.system }, { value: 'dark', icon: Moon, label: t.dark }, { value: 'light', icon: Sun, label: t.light }] as const).map(option => <button key={option.value} aria-pressed={state.settings.theme === option.value} className={state.settings.theme === option.value ? 'selected' : ''} onClick={() => { void updateSettings({ theme: option.value }) }} disabled={!!busy}><option.icon size={15} />{option.label}</button>)}</div></div><div className="setting-row"><div><strong>{t.language}</strong><p>Español · English</p></div><select aria-label={t.language} value={state.settings.language} onChange={event => { void updateSettings({ language: event.target.value as Settings['language'] }) }} disabled={!!busy}><option value="es">Español</option><option value="en">English</option></select></div><Toggle label={t.motion} description={t.motionDescription} checked={state.settings.reduceMotion} onChange={value => { void updateSettings({ reduceMotion: value }) }} disabled={!!busy} /><div className="setting-row"><div><strong>{t.onboardingTitle}</strong><p>{t.onboardingDescription}</p></div><Button onClick={() => { void updateSettings({ onboardingDismissed: false }).then(() => setView('home')) }} disabled={!!busy}>{t.onboardingReopen}</Button></div></section>
           <section className="settings-card"><div className="settings-card-heading"><span className="action-icon violet"><Monitor size={20} /></span><div><h2>{t.behavior}</h2><p>{t.behaviorDescription}</p></div></div><Toggle label={t.tray} description={t.trayDescription} checked={state.settings.closeToTray} onChange={value => { void updateSettings({ closeToTray: value }) }} disabled={!!busy || isPreview} /><Toggle label={t.confirm} description={t.confirmDescription} checked={state.settings.confirmQuit} onChange={value => { void updateSettings({ confirmQuit: value }) }} disabled={!!busy || isPreview} /><Toggle label={t.autostart} description={t.autostartDescription} checked={state.settings.launchOnLogin} onChange={value => { void updateSettings({ launchOnLogin: value }) }} disabled={!!busy || isPreview} /><Toggle label={t.notifications} description={t.notificationsDescription} checked={state.settings.notificationsEnabled} onChange={value => { void updateSettings({ notificationsEnabled: value }) }} disabled={!!busy} /></section>
+          <section className="settings-card preferences-card" aria-labelledby="preferences-title"><div className="settings-card-heading"><span className="action-icon violet"><Download size={20} /></span><div><h2 id="preferences-title">{t.preferences}</h2><p>{t.preferencesDescription}</p></div></div><div className="setting-row"><div><strong>{t.preferencesBackup}</strong><p>{t.preferencesBackupHint}</p></div><div className="toolbar-buttons"><Button onClick={() => { void exportPreferences() }} disabled={!!busy}><Download size={15} />{t.preferencesExport}</Button><Button onClick={() => setPreferencesDialog(true)} disabled={!!busy}><Upload size={15} />{t.preferencesImport}</Button></div></div></section>
           <section className="settings-card updates-card" aria-labelledby="updates-title"><div className="settings-card-heading"><span className="action-icon blue"><RefreshCw size={20} /></span><div><h2 id="updates-title">{t.updates}</h2><p>{t.updatesDescription}</p></div></div><div className="setting-row"><div><strong>{t.checkUpdates}</strong><p>{t.updateManualHint}</p></div><Button onClick={() => { void checkUpdates() }} disabled={!!busy}><RefreshCw size={15} className={busy === 'updates' ? 'spin' : ''} />{busy === 'updates' ? t.checkingUpdates : t.checkUpdates}</Button></div>{updates && <div className="update-results" aria-live="polite">{updates.components.map(component => <div className="diagnostic-tile update-result" key={component.id}><span>{component.id === 'app' ? t.updateApp : t.updateEngine}</span><strong>{component.available ? `${t.updateAvailable}: ${component.available}` : t.upToDate}</strong><p>{t.updateCurrent}: {component.current}</p>{component.tags && <p>{t.updateTags}: {Object.entries(component.tags).map(([key, value]) => `${key}=${value}`).join(', ')}</p>}{component.error && <p className="form-error">{t.updateError}: {component.error}</p>}<p>{t.updateCheckedAt}: {new Date(component.checkedAt).toLocaleString()} · {t.updateSource}: {component.source}</p></div>)}</div>}</section>
           <section className="settings-card"><div className="settings-card-heading"><span className="action-icon green"><Cpu size={20} /></span><div><h2>{t.engine}</h2><p>{t.engineDescription}</p></div></div><div className="engine-settings"><div><StatusDot phase={status.phase} /><strong>{statusText}</strong><span>Harness {UPSTREAM_VERSION} · Node {UPSTREAM_NODE_VERSION.split('.')[0]}</span></div><div className="toolbar-buttons"><Button onClick={() => { void stop() }} disabled={!!busy || status.phase === 'stopped'}><Square size={14} />{t.stop}</Button><Button onClick={() => { void restart() }} disabled={!!busy}><RefreshCw size={15} />{t.restart}</Button></div></div><div className="info-note"><ShieldCheck size={18} /><p>{t.permissionsDescription}</p></div></section></div>}
         {view === 'diagnostics' && <div className="page diagnostics-page"><div className="page-heading"><div><div className="eyebrow">{t.workspace}</div><h1>{t.diagnostics}</h1><p>{t.logsDescription}</p></div><div className="toolbar-buttons"><Button onClick={() => { void api.getDiagnostics().then(setDiagnostics).catch(error => toast(errorMessage(error), 'error')) }}><RefreshCw size={15} />{t.refresh}</Button><Button variant="primary" onClick={() => { void exportDiagnostics() }} disabled={!!busy}><Download size={16} />{t.export}</Button></div></div><EngineRecovery t={t} status={status} busy={!!busy} onRestart={() => { void restart() }} onExport={() => { void exportDiagnostics() }} /><div className="diagnostic-grid">{[{ label: t.version, value: `0.1.0 · Harness ${UPSTREAM_VERSION}` }, { label: t.platform, value: diagnostics?.platform ?? '…' }, { label: t.session, value: diagnostics?.sessionType ?? '…' }, { label: t.architecture, value: diagnostics?.arch ?? '…' }, { label: 'Electron', value: diagnostics?.electron ?? '…' }, { label: t.engine, value: statusText }].map(item => <div className="diagnostic-tile" key={item.label}><span>{item.label}</span><strong>{item.value}</strong></div>)}</div><section className="log-panel"><div className="log-heading"><Terminal size={17} /><h2>{t.logs}</h2><span className="status-pill"><StatusDot phase={status.phase} />{statusText}</span></div><div className="log-controls"><div className="project-filter"><Search size={16} /><input aria-label={t.logFilter} placeholder={t.logFilterPlaceholder} value={logFilter} onChange={event => setLogFilter(event.target.value)} /></div><select aria-label={t.logLevel} value={logLevel} onChange={event => setLogLevel(event.target.value as typeof logLevel)}><option value="all">{t.logLevelAll}</option><option value="info">{t.logLevelInfo}</option><option value="warn">{t.logLevelWarn}</option><option value="error">{t.logLevelError}</option></select><Button onClick={() => { void copyLogs() }} disabled={!filteredLog}><Copy size={15} />{t.copyLogs}</Button></div><pre role="region" tabIndex={0} aria-label={t.logs}>{filteredLog || (diagnostics?.log ? t.noLogMatches : t.noLogs)}</pre></section><div className="info-note"><ShieldCheck size={18} /><p>{t.logsDescription}</p></div></div>}
@@ -260,6 +363,9 @@ export function App() {
     </div>
     {palette && <CommandPalette t={t} onClose={() => setPalette(false)} actions={actions} />}
     {workspaceDialog && <WorkspaceDialog t={t} onClose={() => { setWorkspaceDialog(false); workspaceResolver?.(null); setWorkspaceResolver(null) }} onSubmit={async path => { const project = await api.openWorkspace(path); setState(await api.getState()); setView('agent'); workspaceResolver?.(project); setWorkspaceResolver(null); toast(t.opened); toast(t.openAgentHint) }} />}
+    {templateDialog && <TemplateDialog t={t} isPreview={isPreview} onClose={() => setTemplateDialog(false)} onChooseParent={() => api.chooseTemplateParent()} onSubmit={async (parentPath, name, template) => { await api.createTemplate(parentPath, name, template); setState(await api.getState()); setView('projects'); toast(t.templateCreated) }} />}
+    {aliasProject && <AliasDialog project={aliasProject} t={t} onClose={() => setAliasProject(null)} onSubmit={async alias => { setState(await api.aliasWorkspace(aliasProject.path, alias)); toast(t.aliasSaved) }} />}
+    {preferencesDialog && <PreferencesImportDialog t={t} current={state.settings} onClose={() => setPreferencesDialog(false)} onPreview={json => api.previewPreferencesImport(json)} onApply={async json => { setState(await api.applyPreferencesImport(json)); toast(t.preferencesImported) }} />}
     <div className="toast-stack" aria-live="polite" aria-atomic="false">{toasts.map(item => <div key={item.id} className={`toast ${item.kind}`}>{item.kind === 'success' ? <Check size={17} /> : <X size={17} />}<span>{item.text}</span><button aria-label={t.close} onClick={() => setToasts(items => items.filter(value => value.id !== item.id))}><X size={14} /></button></div>)}</div>
   </div>
 }

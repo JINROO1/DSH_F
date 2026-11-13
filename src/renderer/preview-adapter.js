@@ -14,8 +14,26 @@
     chooseWorkspace: () => new Promise(resolve => {
       window.dispatchEvent(new CustomEvent('dshf:pick-workspace', { detail: { resolve } }))
     }),
+    chooseTemplateParent: async () => null,
+    checkWorkspaces: () => command('workspace:availability'),
     openWorkspace: path => command('workspace:open', { path }),
     forgetWorkspace: path => command('workspace:forget', { path }),
+    favoriteWorkspace: (path, favorite) => command('workspace:favorite', { path, favorite }),
+    aliasWorkspace: (path, alias) => command('workspace:alias', { path, alias }),
+    pruneMissingWorkspaces: () => command('workspace:prune-missing'),
+    createTemplate: (parentPath, name, template) => command('workspace:create-template', { parentPath, name, template }),
+    exportPreferences: async () => {
+      const backup = await command('preferences:export')
+      const url = URL.createObjectURL(new Blob([JSON.stringify(backup, null, 2) + '\n'], { type: 'application/json' }))
+      const anchor = document.createElement('a')
+      anchor.href = url
+      anchor.download = 'dsh-fedora-preferencias.json'
+      document.body.appendChild(anchor); anchor.click(); anchor.remove()
+      setTimeout(() => URL.revokeObjectURL(url), 1000)
+      return 'dsh-fedora-preferencias.json'
+    },
+    previewPreferencesImport: json => command('preferences:preview-import', { json }),
+    applyPreferencesImport: json => command('preferences:apply-import', { json }),
     restartEngine: () => command('engine:restart'),
     stopEngine: () => command('engine:stop'),
     getDiagnostics: () => command('diagnostics:get'),

@@ -10,6 +10,8 @@ import { HarnessRuntime } from './runtime.js'
 import { collectDiagnostics, diagnosticsText } from './diagnostics.js'
 import { checkForUpdates } from './updates.js'
 import { notificationForStatus } from './notifications.js'
+import { createTemplate } from './templates.js'
+import { checkWorkspacePaths, missingWorkspacePaths } from './workspaces.js'
 import { validAppSender, validateExternalUrl, allowedPermission, allowedNavigation } from './security.js'
 import { setAutostart } from './autostart.js'
 
@@ -45,12 +47,26 @@ async function chooseWorkspace(): Promise<string | null> {
   return result.canceled ? null : result.filePaths[0] ?? null
 }
 
+async function chooseTemplateParent(): Promise<string | null> {
+  if (!window) return null
+  const result = await dialog.showOpenDialog(window, { title: 'Selecciona la carpeta donde crear el proyecto', properties: ['openDirectory', 'createDirectory'], buttonLabel: 'Usar carpeta' })
+  return result.canceled ? null : result.filePaths[0] ?? null
+}
+
 async function openWorkspace(path: string): Promise<import('../shared/contracts.js').RecentWorkspace> {
   const info = await stat(path)
   if (!info.isDirectory()) throw new Error('La ruta seleccionada no es una carpeta')
   const canonical = await realpath(path)
   await runtime!.createWorkspace(canonical)
   return store!.rememberWorkspace(canonical)
+}
+
+async function createWorkspaceTemplate(parentPath: string, name: string, template: import('../shared/contracts.js').TemplateKind): Promise<import('../shared/contracts.js').RecentWorkspace> {
+  const info = await stat(parentPath)
+  if (!info.isDirectory()) throw new Error('La carpeta de destino no existe')
+  const target = await createTemplate(await realpath(parentPath), name, template)
+  await runtime!.createWorkspace(target)
+  return store!.rememberWorkspace(target)
 }
 
 async function applySettings(input: unknown): Promise<import('../shared/contracts.js').DesktopState> {
@@ -78,8 +94,23 @@ function installIpc(): void {
       case 'engine:status': return runtime!.status()
       case 'settings:set': return applySettings(command.payload)
       case 'workspace:choose': { const path = await chooseWorkspace(); return path ? openWorkspace(path) : null }
+      case 'workspace:choose-parent': return chooseTemplateParent()
+      case 'workspace:availability': return checkWorkspacePaths(store!.snapshot().recent.map(item => item.path))
       case 'workspace:open': return openWorkspace(command.payload.path)
       case 'workspace:forget': return store!.forgetWorkspace(command.payload.path)
+      case 'workspace:favorite': return store!.favoriteWorkspace(command.payload.path, command.payload.favorite)
+      case 'workspace:alias': return store!.aliasWorkspace(command.payload.path, command.payload.alias)
+      case 'workspace:prune-missing': return store!.pruneMissingWorkspaces(await missingWorkspacePaths(store!.snapshot().recent.map(item => item.path)))
+      case 'workspace:create-template': return createWorkspaceTemplate(command.payload.parentPath, command.payload.name, command.payload.template)
+      case 'preferences:export': {
+        const backup = store!.exportPreferences()
+        const result = await dialog.showSaveDialog(window!, { title: 'Exportar preferencias', defaultPath: `dsh-fedora-preferencias-${new Date().toISOString().slice(0, 10)}.json`, filters: [{ name: 'JSON', extensions: ['json'] }] })
+        if (result.canceled || !result.filePath) return null
+        await writeFile(result.filePath, JSON.stringify(backup, null, 2) + '\n', { mode: 0o600 })
+        return result.filePath
+      }
+      case 'preferences:preview-import': return store!.previewPreferencesImport(command.payload.json)
+      case 'preferences:apply-import': return applySettings(store!.previewPreferencesImport(command.payload.json).settings)
       case 'engine:restart': await runtime!.restart(); return runtime!.status()
       case 'engine:stop': await runtime!.stop(); return runtime!.status()
       case 'diagnostics:get': return collectDiagnostics({ appVersion: app.getVersion(), engine: status, logPath: join(app.getPath('userData'), 'logs/desktop.log'), releasePath: '/etc/os-release' })

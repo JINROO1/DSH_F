@@ -1,7 +1,7 @@
 import { mkdir, readFile, rename, writeFile, copyFile, stat } from 'node:fs/promises'
 import { dirname, isAbsolute, basename } from 'node:path'
 import { randomUUID } from 'node:crypto'
-import { desktopStateSchema, settingsPatchSchema, type DesktopState, type SettingsPatch, type RecentWorkspace } from '../shared/contracts.js'
+import { desktopStateSchema, settingsPatchSchema, preferencesBackupSchema, type DesktopState, type SettingsPatch, type RecentWorkspace, type PreferencesBackup, type PreferencesImportPreview } from '../shared/contracts.js'
 
 /** Atomic, permission-restricted preferences; malformed input never becomes executable configuration. */
 export class DesktopStore {
@@ -41,7 +41,8 @@ export class DesktopStore {
 
   async rememberWorkspace(path: string): Promise<RecentWorkspace> {
     if (!isAbsolute(path) || path.includes('\0') || path.includes('\n') || path.length > 4096) throw new Error('Selecciona una carpeta absoluta válida')
-    const item = { path, name: basename(path) || path, lastOpened: new Date().toISOString() }
+    const previous = this.state.recent.find(entry => entry.path === path)
+    const item: RecentWorkspace = { path, name: basename(path) || path, lastOpened: new Date().toISOString(), favorite: previous?.favorite ?? false, ...(previous?.alias ? { alias: previous.alias } : {}) }
     this.state.recent = [item, ...this.state.recent.filter(entry => entry.path !== path)].slice(0, 20)
     await this.persist()
     return { ...item }
@@ -51,6 +52,41 @@ export class DesktopStore {
     this.state.recent = this.state.recent.filter(entry => entry.path !== path)
     await this.persist()
     return this.snapshot()
+  }
+
+  async favoriteWorkspace(path: string, favorite: boolean): Promise<DesktopState> {
+    const item = this.state.recent.find(entry => entry.path === path)
+    if (!item) throw new Error('El proyecto no está en recientes')
+    item.favorite = favorite
+    await this.persist()
+    return this.snapshot()
+  }
+
+  async aliasWorkspace(path: string, alias: string): Promise<DesktopState> {
+    const item = this.state.recent.find(entry => entry.path === path)
+    if (!item) throw new Error('El proyecto no está en recientes')
+    const trimmed = alias.trim()
+    if (trimmed) item.alias = trimmed.slice(0, 120)
+    else delete item.alias
+    await this.persist()
+    return this.snapshot()
+  }
+
+  async pruneMissingWorkspaces(missingPaths: readonly string[]): Promise<DesktopState> {
+    const missing = new Set(missingPaths)
+    this.state.recent = this.state.recent.filter(entry => !missing.has(entry.path))
+    await this.persist()
+    return this.snapshot()
+  }
+
+  exportPreferences(): PreferencesBackup {
+    return preferencesBackupSchema.parse({ schemaVersion: 1, exportedAt: new Date().toISOString(), settings: this.state.settings })
+  }
+
+  previewPreferencesImport(json: string): PreferencesImportPreview {
+    const backup = preferencesBackupSchema.parse(JSON.parse(json))
+    const changes = (Object.keys(backup.settings) as (keyof typeof backup.settings)[]).filter(key => backup.settings[key] !== this.state.settings[key])
+    return { settings: backup.settings, changes }
   }
 
   private persist(): Promise<void> {

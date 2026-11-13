@@ -38,7 +38,7 @@ Tamaños orientativos: **S** = cambio localizado, **M** = varios archivos/prueba
 | 3 | Actualizaciones manuales asistidas | Alta | Hecho | 1; flujo upstream existente |
 | 4 | Fedora/KDE y distribución profesional | Media/alta | En curso: automatizable hecho; hardware/firma bloqueados | 1–3; hardware Fedora |
 | 5 | Seguridad y cadena de suministro | Media/alta | En curso: automatizable hecho; firma bloqueada | 3–4 para distribución firmada |
-| 6 | Productividad diaria | Media | Pendiente | 2 |
+| 6 | Productividad diaria | Media | Hecho | 2 |
 | 7 | Comunidad y sostenibilidad | Continua | Pendiente | 0 |
 
 ## Fase 0 — Plan y mantenimiento
@@ -146,14 +146,14 @@ No hacer todavía: fork profundo del motor, marketplace de plugins no oficiales 
 
 Objetivo: reducir fricción sin convertir la shell en otro motor de agentes.
 
-| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño |
-|---|---|---|---|---|
-| 6.1 | Paleta de comandos | Añadir acciones existentes: tema, proyecto, diagnóstico, reinicio | Teclado completo; acciones pasan por API actual; sin shell exec arbitrario | S |
-| 6.2 | Proyectos recientes | Favoritos, alias, detectar rutas inexistentes y limpiar rotos | No borra archivos del usuario; migración de preferencias compatible | M |
-| 6.3 | Plantillas locales | Crear carpetas mínimas vacía/Node/Python/docs/scripts | Selección explícita de destino; no sobrescribe archivos; no ejecuta instalaciones | M |
-| 6.4 | Backup de preferencias | Exportar/importar solo configuración no sensible | Excluye credenciales/tokens; valida esquema; preview antes de aplicar; backup previo | M |
-| 6.5 | Idiomas y textos | Revisión es/en y mensajes truncados | Claves sincronizadas; E2E de idioma; sin strings hardcodeados nuevos | S |
-| 6.6 | Rendimiento de recursos | Medir arranque/memoria antes de optimizar iframe/runtime | Métricas repetibles; no romper sesión WebSocket; mejora demostrada | M |
+| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño | Estado |
+|---|---|---|---|---|---|
+| 6.1 | Paleta de comandos | Añadir acciones existentes: tema, proyecto, diagnóstico, reinicio | Teclado completo; acciones pasan por API actual; sin shell exec arbitrario | S | Hecho |
+| 6.2 | Proyectos recientes | Favoritos, alias, detectar rutas inexistentes y limpiar rotos | No borra archivos del usuario; migración de preferencias compatible | M | Hecho |
+| 6.3 | Plantillas locales | Crear carpetas mínimas vacía/Node/Python/docs/scripts | Selección explícita de destino; no sobrescribe archivos; no ejecuta instalaciones | M | Hecho |
+| 6.4 | Backup de preferencias | Exportar/importar solo configuración no sensible | Excluye credenciales/tokens; valida esquema; preview antes de aplicar; backup previo | M | Hecho |
+| 6.5 | Idiomas y textos | Revisión es/en y mensajes truncados | Claves sincronizadas; E2E de idioma; sin strings hardcodeados nuevos | S | Hecho |
+| 6.6 | Rendimiento de recursos | Medir arranque/memoria antes de optimizar iframe/runtime | Métricas repetibles; no romper sesión WebSocket; mejora demostrada | M | Hecho: línea base repetible; sin optimización aplicada todavía |
 
 ## Fase 7 — Comunidad y sostenibilidad
 
@@ -178,7 +178,8 @@ Objetivo: que otra persona pueda contribuir sin depender del mantenedor original
 | 2026-11-13 | 3 | Comprobación manual de actualizaciones en CLI/app, privacidad y pruebas offline | `docs/UPDATES.md`; `npm run check` verde: 97/97 unitarias, 3/3 integración, 25/25 E2E |
 | 2026-11-13 | 4 | Notificaciones opcionales, matriz Fedora, ADR distribución y checksums CI | `docs/FEDORA.md`, `docs/FEDORA-MATRIX.md`, `docs/adr/0001-distribucion-rpm.md`; `npm run check` verde: 99/99 unitarias, 3/3 integración, 26/26 E2E |
 | 2026-11-13 | 5 | SBOM, licencias estrictas, ADRs de permisos/llavero y revisión de fronteras | `docs/SUPPLY-CHAIN.md`; 677 componentes objetivo, 0 licencias desconocidas; `npm run check` verde: 101/101 unitarias, 3/3 integración, 26/26 E2E |
+| 2026-11-13 | 6 | Paleta ampliada, favoritos/alias/rutas rotas, plantillas, backup de preferencias, es/en y línea base de rendimiento | `docs/PRODUCTIVITY.md`, `docs/PERFORMANCE.md`; `npm run check` verde: 110/110 unitarias, 3/3 integración, 30/30 E2E; baseline 3 runs con WebSocket |
 
 ## Próximo paso inmediato
 
-Continuar con **Fase 6, productividad diaria**. Firma criptográfica, Fedora/Plasma real y upgrade RPM siguen bloqueados por dependencias externas.
+Continuar con **Fase 7, comunidad y sostenibilidad**. Firma criptográfica, Fedora/Plasma real y upgrade RPM siguen bloqueados por dependencias externas.

@@ -1,4 +1,4 @@
-import { mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
+import { mkdir, mkdtemp, readFile, readdir, rm, stat, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
@@ -113,8 +113,58 @@ describe('DesktopStore', () => {
     await store.load()
     const snapshot = store.snapshot()
     snapshot.settings.theme = 'light'
-    snapshot.recent.push({ path: '/x', name: 'x', lastOpened: new Date().toISOString() })
+    snapshot.recent.push({ path: '/x', name: 'x', lastOpened: new Date().toISOString(), favorite: false })
     expect(store.snapshot().settings.theme).toBe(DEFAULT_SETTINGS.theme)
     expect(store.snapshot().recent).toEqual([])
+  })
+  it('persiste favoritos y alias, y los conserva al reabrir el proyecto', async () => {
+    const path = join(dir, 'desktop.json')
+    const store = new DesktopStore(path)
+    await store.load()
+    const project = join(dir, 'proyecto')
+    await store.rememberWorkspace(project)
+    await store.favoriteWorkspace(project, true)
+    await store.aliasWorkspace(project, '  Mi alias  ')
+    const reloaded = new DesktopStore(path)
+    const state = await reloaded.load()
+    expect(state.recent[0]).toMatchObject({ path: project, favorite: true, alias: 'Mi alias' })
+    await reloaded.rememberWorkspace(project)
+    expect(reloaded.snapshot().recent[0]).toMatchObject({ favorite: true, alias: 'Mi alias' })
+    await reloaded.aliasWorkspace(project, '   ')
+    expect(reloaded.snapshot().recent[0]?.alias).toBeUndefined()
+    await expect(reloaded.favoriteWorkspace(join(dir, 'unknown'), true)).rejects.toThrow()
+    await expect(reloaded.aliasWorkspace(join(dir, 'unknown'), 'x')).rejects.toThrow()
+  })
+  it('limpia solo rutas indicado y no borra archivos del usuario', async () => {
+    const store = new DesktopStore(join(dir, 'desktop.json'))
+    await store.load()
+    const keep = join(dir, 'keep')
+    const remove = join(dir, 'remove')
+    await mkdir(keep)
+    await writeFile(join(keep, 'data.txt'), 'safe')
+    await store.rememberWorkspace(keep)
+    await store.rememberWorkspace(remove)
+    const state = await store.pruneMissingWorkspaces([remove])
+    expect(state.recent.map(item => item.path)).toEqual([keep])
+    expect(await readFile(join(keep, 'data.txt'), 'utf8')).toBe('safe')
+  })
+  it('exporta solo preferencias no sensibles y previsualiza importaciones válidas', async () => {
+    const path = join(dir, 'desktop.json')
+    const store = new DesktopStore(path)
+    await store.load()
+    await store.rememberWorkspace(join(dir, 'privado'))
+    const backup = store.exportPreferences()
+    expect(Object.keys(backup).sort()).toEqual(['exportedAt', 'schemaVersion', 'settings'])
+    expect(JSON.stringify(backup)).not.toContain('privado')
+    const json = JSON.stringify({ ...backup, settings: { ...backup.settings, theme: 'light', language: 'en' } })
+    const preview = store.previewPreferencesImport(json)
+    expect(preview.changes.sort()).toEqual(['language', 'theme'])
+    expect(store.previewPreferencesImport(JSON.stringify(backup)).changes).toEqual([])
+    await store.updateSettings(preview.settings)
+    expect(store.snapshot().settings.theme).toBe('light')
+    expect(JSON.parse(await readFile(`${path}.bak`, 'utf8')).settings.theme).toBe(DEFAULT_SETTINGS.theme)
+    for (const invalid of ['{', JSON.stringify({ ...backup, schemaVersion: 2 }), JSON.stringify({ ...backup, apiKey: 'secret' }), JSON.stringify({ ...backup, settings: { ...backup.settings, apiKey: 'secret' } })]) {
+      expect(() => store.previewPreferencesImport(invalid)).toThrow()
+    }
   })
 })

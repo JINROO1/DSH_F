@@ -1,0 +1,46 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-13T00:46:57.514Z",
+  "target": "preview-linux-x64-glibc",
+  "command": "node scripts/measure-performance.mjs --runs 3 --port 3210",
+  "note": "Línea base repetible. No se aplicó optimización de iframe/runtime; cualquier mejora futura debe compararse contra este archivo y conservar WebSocket/sesión.",
+  "runs": [
+    {
+      "run": 1,
+      "engineReadyMs": 4577,
+      "frameVisibleMs": 2293,
+      "domContentLoadedMs": 127,
+      "heapBytes": 55961993,
+      "resourceCount": 8,
+      "webSockets": 1,
+      "processTreeRssKiB": 644456
+    },
+    {
+      "run": 2,
+      "engineReadyMs": 4297,
+      "frameVisibleMs": 2253,
+      "domContentLoadedMs": 128,
+      "heapBytes": 55474772,
+      "resourceCount": 8,
+      "webSockets": 1,
+      "processTreeRssKiB": 643072
+    },
+    {
+      "run": 3,
+      "engineReadyMs": 4553,
+      "frameVisibleMs": 2311,
+      "domContentLoadedMs": 133,
+      "heapBytes": 55720495,
+      "resourceCount": 8,
+      "webSockets": 1,
+      "processTreeRssKiB": 658776
+    }
+  ],
+  "median": {
+    "engineReadyMs": 4553,
+    "frameVisibleMs": 2293,
+    "domContentLoadedMs": 128,
+    "heapBytes": 55720495,
+    "processTreeRssKiB": 644456
+  }
+}

@@ -20,7 +20,7 @@
 
 DSH_F transforma DeepSeek Harness en una aplicación de escritorio nativa para **Fedora Linux + KDE Plasma**. Conserva el motor de agentes oficial (plugins, sesiones, workspaces, credenciales locales) y añade una capa de escritorio robusta:
 
-- **Shell premium en español** con portada, proyectos recientes, paleta de comandos (`Ctrl+K`), ajustes y diagnóstico.
+- **Shell premium en español/inglés** con portada, proyectos recientes (favoritos/alias), plantillas locales, paleta de comandos (`Ctrl+K`), backup de preferencias, ajustes y diagnóstico.
 - **Motor oficial aislado**: proceso hijo con su propio Node incluido, `DSH_HOME` propio y permisos iniciales `workspace-write`.
 - **Puente loopback autenticado**: el token de Harness nunca llega a la interfaz; cookie propia, tickets de un solo uso y proxy HTTP/WebSocket.
 - **Integración Plasma**: bandeja, cerrar a bandeja, confirmación de salida, autostart XDG, tema claro/oscuro/sistema y notificaciones.
@@ -95,6 +95,7 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 | `npm run licenses` | Reporte de licencias; `--strict` bloquea evidencia desconocida. |
 | `npm run upstream:prepare` | Prepara una actualización del motor: pin, lockfile, referencias y auditoría. |
 | `npm run updates:check` | Comprobación manual de solo lectura: release DSH_F y tags npm del motor; no instala nada. |
+| `npm run measure:performance` | Línea base repetible de arranque/memoria con motor real y WebSocket; no optimiza. |
 | `npm run qualify:runtime` | Auditoría + `check` con motor real; requisito previo para empaquetar. |
 | `npm run package:runtime` | Prepara runtime fuera de `app.asar` con manifiesto SHA-256 y cualificación vigente. |
 | `npm run package:fedora` | RPM x64 con electron-builder. |
@@ -124,6 +125,8 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 - [Onboarding y diagnóstico amigable](docs/ONBOARDING.md)
 - [Investigación upstream](docs/UPSTREAM.md)
 - [Actualizaciones manuales asistidas](docs/UPDATES.md)
+- [Productividad diaria](docs/PRODUCTIVITY.md)
+- [Rendimiento y línea base](docs/PERFORMANCE.md)
 - [Seguridad](docs/SECURITY.md)
 - [Cadena de suministro](docs/SUPPLY-CHAIN.md)
 - [Pruebas](docs/TESTING.md)
@@ -134,9 +137,9 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 
 | Área | Estado |
 |---|---|
-| Unitarias main/contratos/tema | ✅ 90 tests, cobertura > 98% líneas; contraste WCAG y paridad shell/agente |
+| Unitarias main/contratos/tema | ✅ 110 tests, cobertura > 98% líneas; contraste WCAG, paridad shell/agente, plantillas y preferencias |
 | Integración motor oficial | ✅ arranque, ajustes, workspace/sesión, restart, parada, CSS/fuentes del tema |
-| E2E Chromium + axe | ✅ 22 tests; matriz axe claro/oscuro de 6 escenarios, teclado/foco, paridad shell/agente, diagnóstico y responsive |
+| E2E Chromium + axe | ✅ 30 tests; matriz axe claro/oscuro, teclado/foco, paridad shell/agente, diagnóstico, productividad y responsive |
 | Auditoría dependencias | ✅ 0 vulnerabilidades en raíz y runtime (overrides documentados) |
 | Smoke Electron / RPM Fedora | 🔁 CI (`.github/workflows/ci.yml`); requiere binario Electron y Fedora/Plasma real |
 

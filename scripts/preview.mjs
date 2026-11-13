@@ -5,7 +5,7 @@ import { join, resolve, relative, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
-import { HarnessRuntime, DesktopStore, DiagnosticLog, collectDiagnostics, diagnosticsText, checkForUpdates, commandSchema, APP_ORIGIN, errorMessage } from '../dist/preview-core.js'
+import { HarnessRuntime, DesktopStore, DiagnosticLog, collectDiagnostics, diagnosticsText, checkForUpdates, createTemplate, checkWorkspacePaths, missingWorkspacePaths, commandSchema, APP_ORIGIN, errorMessage } from '../dist/preview-core.js'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const portIndex = process.argv.indexOf('--port')
@@ -34,21 +34,40 @@ function broadcast(status) {
 }
 runtime.on('status', broadcast)
 
+async function previewDirectory(path, allowRoot = false) {
+  const canonical = await realpath(path)
+  const rel = relative(workspaces, canonical)
+  if (rel.startsWith('..') || resolve(rel) === rel || (!allowRoot && rel === '') || !(await stat(canonical)).isDirectory()) throw new Error('La vista previa solo admite carpetas dentro de .preview/workspaces')
+  return canonical
+}
+
 async function command(input) {
-  const command = commandSchema.parse(input)
-  switch (command.channel) {
+  const parsed = commandSchema.parse(input)
+  switch (parsed.channel) {
     case 'state:get': return store.snapshot()
     case 'engine:status': return safeStatus()
-    case 'settings:set': { const next = await store.updateSettings(command.payload); await runtime.applySettings(next.settings); return next }
+    case 'settings:set': { const next = await store.updateSettings(parsed.payload); await runtime.applySettings(next.settings); return next }
     case 'workspace:choose': return null
+    case 'workspace:choose-parent': return null
+    case 'workspace:availability': return checkWorkspacePaths(store.snapshot().recent.map(item => item.path))
     case 'workspace:open': {
-      const canonical = await realpath(command.payload.path)
-      const rel = relative(workspaces, canonical)
-      if (rel.startsWith('..') || rel === '' || resolve(rel) === rel || !(await stat(canonical)).isDirectory()) throw new Error('La vista previa solo admite carpetas dentro de .preview/workspaces')
+      const canonical = await previewDirectory(parsed.payload.path)
       await runtime.createWorkspace(canonical)
       return store.rememberWorkspace(canonical)
     }
-    case 'workspace:forget': return store.forgetWorkspace(command.payload.path)
+    case 'workspace:forget': return store.forgetWorkspace(parsed.payload.path)
+    case 'workspace:favorite': return store.favoriteWorkspace(parsed.payload.path, parsed.payload.favorite)
+    case 'workspace:alias': return store.aliasWorkspace(parsed.payload.path, parsed.payload.alias)
+    case 'workspace:prune-missing': return store.pruneMissingWorkspaces(await missingWorkspacePaths(store.snapshot().recent.map(item => item.path)))
+    case 'workspace:create-template': {
+      const parent = await previewDirectory(parsed.payload.parentPath, true)
+      const target = await createTemplate(parent, parsed.payload.name, parsed.payload.template)
+      await runtime.createWorkspace(target)
+      return store.rememberWorkspace(target)
+    }
+    case 'preferences:export': return store.exportPreferences()
+    case 'preferences:preview-import': return store.previewPreferencesImport(parsed.payload.json)
+    case 'preferences:apply-import': return command({ channel: 'settings:set', payload: store.previewPreferencesImport(parsed.payload.json).settings })
     case 'engine:restart': await runtime.restart(); return safeStatus()
     case 'engine:stop': await runtime.stop(); return safeStatus()
     case 'diagnostics:get': return collectDiagnostics({ appVersion: '0.1.0-preview', engine: safeStatus(), logPath: join(preview, 'logs/desktop.log') })

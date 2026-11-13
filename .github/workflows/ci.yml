@@ -74,6 +74,16 @@ jobs:
         run: |
           rpm -qpiv release/*.rpm
           rpm -qpR release/*.rpm
+      - name: Verificar motor incluido en el RPM
+        run: |
+          set -o pipefail
+          rpm -qpl release/*.rpm > rpm-files.txt
+          for pattern in '/runtime/node_modules/node-linux-x64/bin/node$' '/runtime/node_modules/@deepseek-ai/dsh/lib/bin.js$' '/runtime/runtime-manifest.json$'; do
+            if ! grep -E "$pattern" rpm-files.txt; then
+              echo "::error::El RPM no incluye el motor requerido (patrón ausente: ${pattern}). Revisa extraResources y stage-runtime."
+              exit 1
+            fi
+          done
       - uses: actions/upload-artifact@v4
         with:
           name: dsh-fedora-rpm

@@ -44,6 +44,10 @@ jobs:
           cd release
           sha256sum *.rpm > SHA256SUMS
           sha256sum -c SHA256SUMS
+      - name: Generar SBOM y reporte de licencias
+        run: |
+          npm run sbom
+          npm run licenses -- --strict
       - name: Validar metadatos RPM
         run: |
           rpm -qpiv release/*.rpm
@@ -54,6 +58,8 @@ jobs:
           path: |
             release/*.rpm
             release/SHA256SUMS
+            release/sbom.json
+            release/LICENSES.json
           if-no-files-found: error
       - uses: actions/upload-artifact@v4
         if: failure()
@@ -101,4 +107,6 @@ jobs:
           files: |
             rpms/*.rpm
             rpms/SHA256SUMS
+            rpms/sbom.json
+            rpms/LICENSES.json
           generate_release_notes: true

@@ -91,6 +91,8 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 | `npm run test:electron` | Smoke nativo Electron (CI con Xvfb). |
 | `npm run check` | Typecheck + cobertura + build + integración + E2E. |
 | `npm run audit:dependencies` | `npm audit --omit=dev` en raíz y runtime. |
+| `npm run sbom` | Inventario SPDX-lite de producción desde lockfiles, objetivo linux-x64-glibc. |
+| `npm run licenses` | Reporte de licencias; `--strict` bloquea evidencia desconocida. |
 | `npm run upstream:prepare` | Prepara una actualización del motor: pin, lockfile, referencias y auditoría. |
 | `npm run updates:check` | Comprobación manual de solo lectura: release DSH_F y tags npm del motor; no instala nada. |
 | `npm run qualify:runtime` | Auditoría + `check` con motor real; requisito previo para empaquetar. |
@@ -123,6 +125,7 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 - [Investigación upstream](docs/UPSTREAM.md)
 - [Actualizaciones manuales asistidas](docs/UPDATES.md)
 - [Seguridad](docs/SECURITY.md)
+- [Cadena de suministro](docs/SUPPLY-CHAIN.md)
 - [Pruebas](docs/TESTING.md)
 - [Fedora KDE](docs/FEDORA.md)
 - [Avisos de terceros](THIRD_PARTY_NOTICES.md)

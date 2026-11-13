@@ -37,7 +37,7 @@ Tamaños orientativos: **S** = cambio localizado, **M** = varios archivos/prueba
 | 2 | Onboarding y diagnóstico amigable | Alta | Hecho | 1 |
 | 3 | Actualizaciones manuales asistidas | Alta | Hecho | 1; flujo upstream existente |
 | 4 | Fedora/KDE y distribución profesional | Media/alta | En curso: automatizable hecho; hardware/firma bloqueados | 1–3; hardware Fedora |
-| 5 | Seguridad y cadena de suministro | Media/alta | Pendiente | 3–4 para distribución firmada |
+| 5 | Seguridad y cadena de suministro | Media/alta | En curso: automatizable hecho; firma bloqueada | 3–4 para distribución firmada |
 | 6 | Productividad diaria | Media | Pendiente | 2 |
 | 7 | Comunidad y sostenibilidad | Continua | Pendiente | 0 |
 
@@ -131,14 +131,14 @@ Bloqueo externo: hardware Fedora/Plasma y decisiones/cuentas de distribución. N
 
 Objetivo: hacer verificable qué se distribuye y reducir exposición de credenciales/permisos.
 
-| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño |
-|---|---|---|---|---|
-| 5.1 | SBOM | Generar inventario de dependencias del runtime/app en CI | Artefacto por release; versiones coinciden con lockfiles; herramienta fijada | M |
-| 5.2 | Licencias | Revisar avisos de terceros y generar reporte | Licencias compatibles conservadas; faltantes bloquean revisión de release | M |
-| 5.3 | Firma y procedencia | Firmar artefactos/metadatos según decisión 4.5 | Verificación documentada; secretos solo en almacén CI; sin claves en Git | L |
-| 5.4 | Permisos por proyecto | Investigar contrato upstream read-only/workspace-write | ADR antes de UI; no falsa sensación de sandbox; pruebas de contrato | L |
-| 5.5 | Llavero del sistema | Investigar KDE Wallet/libsecret sin parchear motor | Prototipo separado; decidir si upstream lo soporta; no migrar credenciales a ciegas | L |
-| 5.6 | Revisión de fronteras | Repasar IPC, cookies, navegación, descargas y fuentes locales | Tests de abuso; modelo de amenazas actualizado; auditoría 0 o riesgo aceptado por escrito | M |
+| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño | Estado |
+|---|---|---|---|---|---|
+| 5.1 | SBOM | Generar inventario de dependencias del runtime/app en CI | Artefacto por release; versiones coinciden con lockfiles; herramienta fijada | M | Hecho |
+| 5.2 | Licencias | Revisar avisos de terceros y generar reporte | Licencias compatibles conservadas; faltantes bloquean revisión de release | M | Hecho: reporte `--strict` con 0 faltantes objetivo; revisión legal humana pendiente |
+| 5.3 | Firma y procedencia | Firmar artefactos/metadatos según decisión 4.5 | Verificación documentada; secretos solo en almacén CI; sin claves en Git | L | Bloqueado: checksums hechos; firma requiere claves/decisión externa |
+| 5.4 | Permisos por proyecto | Investigar contrato upstream read-only/workspace-write | ADR antes de UI; no falsa sensación de sandbox; pruebas de contrato | L | Hecho: ADR 0002; sin UI de permisos avanzada |
+| 5.5 | Llavero del sistema | Investigar KDE Wallet/libsecret sin parchear motor | Prototipo separado; decidir si upstream lo soporta; no migrar credenciales a ciegas | L | Hecho: ADR 0003; integración aplazada hasta soporte upstream |
+| 5.6 | Revisión de fronteras | Repasar IPC, cookies, navegación, descargas y fuentes locales | Tests de abuso; modelo de amenazas actualizado; auditoría 0 o riesgo aceptado por escrito | M | Hecho |
 
 No hacer todavía: fork profundo del motor, marketplace de plugins no oficiales ni acceso completo por defecto.
 
@@ -177,7 +177,8 @@ Objetivo: que otra persona pueda contribuir sin depender del mantenedor original
 | 2026-11-12 | 2 | Onboarding descartable, credenciales/permisos, recuperación y logs filtrables | `docs/ONBOARDING.md`; typecheck/cobertura/build/integración verdes, 92/92 unitarias, 24/24 E2E |
 | 2026-11-13 | 3 | Comprobación manual de actualizaciones en CLI/app, privacidad y pruebas offline | `docs/UPDATES.md`; `npm run check` verde: 97/97 unitarias, 3/3 integración, 25/25 E2E |
 | 2026-11-13 | 4 | Notificaciones opcionales, matriz Fedora, ADR distribución y checksums CI | `docs/FEDORA.md`, `docs/FEDORA-MATRIX.md`, `docs/adr/0001-distribucion-rpm.md`; `npm run check` verde: 99/99 unitarias, 3/3 integración, 26/26 E2E |
+| 2026-11-13 | 5 | SBOM, licencias estrictas, ADRs de permisos/llavero y revisión de fronteras | `docs/SUPPLY-CHAIN.md`; 677 componentes objetivo, 0 licencias desconocidas; `npm run check` verde: 101/101 unitarias, 3/3 integración, 26/26 E2E |
 
 ## Próximo paso inmediato
 
-Continuar con **Fase 5, seguridad y cadena de suministro**. Los bloqueos externos de Fedora/Plasma, upgrade RPM real y firma permanecen abiertos; no publicar ni firmar sin revisión humana.
+Continuar con **Fase 6, productividad diaria**. Firma criptográfica, Fedora/Plasma real y upgrade RPM siguen bloqueados por dependencias externas.

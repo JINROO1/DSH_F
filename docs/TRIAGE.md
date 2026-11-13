@@ -29,6 +29,8 @@ Rutina para que el proyecto no dependa del mantenedor original ni de una convers
 - **UI de permisos avanzada:** aplazada. Razón: ADR 0002; confirmar contrato upstream antes de exponer read-only/full-access.
 - **Optimización iframe/runtime:** no aplicada. Razón: Fase 6.6 solo establece línea base; cualquier mejora debe demostrarse sin romper WebSocket/sesión.
 
+| 2026-11-13 | Usuario instaló v0.1.0 en Fedora y la app mostró «Falta el motor incluido. Ejecuta npm run setup». | electron-builder descarta el node_modules de la raíz de extraResources; el RPM no traía el motor. CI pasó porque no comprobaba su contenido. | Fix en `electron-builder.yml` + paso CI "Verificar motor incluido en el RPM" (run 43498833407 verde). Publicada v0.1.1 (tag en fb7545a). v0.1.0 marcada como defectuosa en sus notas. |
+
 ## Próxima revisión
 
 Mensual desde 2026-11-13, o antes de etiquetar una release. No publicar releases con CI no verde ni sin revisión humana.

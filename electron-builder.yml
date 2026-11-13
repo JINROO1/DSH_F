@@ -12,10 +12,15 @@ files:
   - LICENSE
   - THIRD_PARTY_NOTICES.md
 extraResources:
+  # electron-builder descarta el node_modules en la raíz de un `from`; por eso el motor se copia desde su propia carpeta.
+  - from: .packaging/runtime/node_modules
+    to: runtime/node_modules
+    filter:
+      - '**/*'
   - from: .packaging/runtime
     to: runtime
     filter:
-      - '**/*'
+      - '*.json'
   - from: docs/UPSTREAM.md
     to: UPSTREAM.md
 linux:

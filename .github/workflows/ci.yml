@@ -51,8 +51,15 @@ jobs:
           CI: 'true'
       - name: Smoke nativo Electron
         run: xvfb-run -a npm run test:electron
-      - name: Empaquetar RPM Fedora
-        run: npm run package:fedora
+      - name: Preparar runtime cualificado
+        run: npm run package:runtime
+      - name: Construir RPM Fedora
+        run: |
+          set -o pipefail
+          npx electron-builder --linux rpm --x64 2>&1 | tee electron-builder.log || {
+            tail -n 40 electron-builder.log | sed 's/^/::error::electron-builder: /'
+            exit 1
+          }
       - name: Generar y verificar checksums SHA-256
         run: |
           cd release

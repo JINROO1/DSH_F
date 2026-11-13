@@ -13,7 +13,7 @@ permissions:
 jobs:
   verify:
     name: Verificar y empaquetar RPM
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -32,7 +32,7 @@ jobs:
       - name: Instalar dependencias fijadas
         run: npm ci && npm --prefix runtime ci
       - name: Instalar Chromium de Playwright
-        run: npx playwright install chromium
+        run: npx playwright install --with-deps chromium
       - name: Cualificar runtime (auditoría, typecheck, unitarias, build, integración real y E2E)
         run: npm run qualify:runtime
       - name: Smoke nativo Electron
@@ -74,7 +74,7 @@ jobs:
   fedora-install:
     name: Instalar RPM en Fedora
     needs: verify
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     container: fedora:latest
     timeout-minutes: 20
     steps:
@@ -94,7 +94,7 @@ jobs:
     name: Publicar release
     if: startsWith(github.ref, 'refs/tags/v')
     needs: [verify, fedora-install]
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:

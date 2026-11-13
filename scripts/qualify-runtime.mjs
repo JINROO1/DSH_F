@@ -6,7 +6,12 @@ import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 import { fileURLToPath } from 'node:url'
 import { join } from 'node:path'
+import { parseArgs } from 'node:util'
 
+const { values } = parseArgs({ options: { 'record-only': { type: 'boolean', default: false } }, strict: true })
+// CI may run the checks as separate steps for clearer failure attribution, then
+// record the qualification in the same job. Local use must run the full gate.
+if (values['record-only'] && process.env.CI !== 'true') throw new Error('--record-only solo puede usarse en CI después de pasar auditoría y check')
 const root = fileURLToPath(new URL('..', import.meta.url))
 const runtime = join(root, 'runtime')
 const destination = join(root, '.packaging')
@@ -23,10 +28,14 @@ const inputs = {
   'src/renderer/harness-theme.css': await hash(join(root, 'src/renderer/harness-theme.css')),
   'src/renderer/styles.css': await hash(join(root, 'src/renderer/styles.css')),
 }
-console.log('Auditando dependencias…')
-execFileSync('npm', ['run', 'audit:dependencies'], { cwd: root, stdio: 'inherit' })
-console.log('Cualificando con typecheck, cobertura, build, integración real y E2E…')
-execFileSync('npm', ['run', 'check'], { cwd: root, stdio: 'inherit' })
+if (values['record-only']) {
+  console.log('Registrando cualificación CI: auditoría y check ya se ejecutaron como pasos separados…')
+} else {
+  console.log('Auditando dependencias…')
+  execFileSync('npm', ['run', 'audit:dependencies'], { cwd: root, stdio: 'inherit' })
+  console.log('Cualificando con typecheck, cobertura, build, integración real y E2E…')
+  execFileSync('npm', ['run', 'check'], { cwd: root, stdio: 'inherit' })
+}
 await mkdir(destination, { recursive: true })
 const qualification = {
   schemaVersion: 2,

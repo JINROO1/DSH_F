@@ -33,8 +33,22 @@ jobs:
         run: npm ci && npm --prefix runtime ci
       - name: Instalar Chromium de Playwright
         run: npx playwright install --with-deps chromium
-      - name: Cualificar runtime (auditoría, typecheck, unitarias, build, integración real y E2E)
-        run: npm run qualify:runtime
+      - name: Auditar dependencias
+        run: npm run audit:dependencies
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Unitarias y cobertura
+        run: npm run test:coverage
+      - name: Build
+        run: npm run build
+      - name: Integración motor real
+        run: npm run test:integration
+      - name: E2E navegador
+        run: npm run test:e2e
+      - name: Registrar cualificación runtime
+        run: npm run qualify:runtime -- --record-only
+        env:
+          CI: 'true'
       - name: Smoke nativo Electron
         run: xvfb-run -a npm run test:electron
       - name: Empaquetar RPM Fedora

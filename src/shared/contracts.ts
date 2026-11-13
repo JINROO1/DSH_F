@@ -83,11 +83,28 @@ export const commandSchema = z.discriminatedUnion('channel', [
   z.object({ channel: z.literal('engine:stop') }).strict(),
   z.object({ channel: z.literal('diagnostics:get') }).strict(),
   z.object({ channel: z.literal('diagnostics:export') }).strict(),
+  z.object({ channel: z.literal('updates:check') }).strict(),
   z.object({ channel: z.literal('external:open'), payload: z.object({ destination: z.enum(['documentation', 'source', 'privacy']) }).strict() }).strict(),
   z.object({ channel: z.literal('window:action'), payload: z.object({ action: z.enum(['minimize', 'maximize', 'close']) }).strict() }).strict(),
 ])
 export type Command = z.infer<typeof commandSchema>
 export type CommandChannel = Command['channel']
+
+export const updateComponentSchema = z.object({
+  id: z.enum(['app', 'engine']),
+  current: z.string().min(1),
+  available: z.string().min(1).nullable(),
+  checkedAt: z.string().datetime(),
+  source: z.string().url(),
+  error: z.string().optional(),
+  tags: z.record(z.string(), z.string()).optional(),
+}).strict()
+export const updateCheckSchema = z.object({
+  checkedAt: z.string().datetime(),
+  components: z.array(updateComponentSchema).length(2),
+}).strict()
+export type UpdateComponent = z.infer<typeof updateComponentSchema>
+export type UpdateCheck = z.infer<typeof updateCheckSchema>
 
 /** The only browser-visible native surface. No arbitrary paths, shell commands or URL openings. */
 export interface DesktopApi {
@@ -101,6 +118,7 @@ export interface DesktopApi {
   stopEngine(): Promise<EngineStatus>
   getDiagnostics(): Promise<Diagnostics>
   exportDiagnostics(): Promise<string | null>
+  checkUpdates(): Promise<UpdateCheck>
   openExternal(destination: keyof typeof EXTERNAL_LINKS): Promise<void>
   windowAction(action: 'minimize' | 'maximize' | 'close'): Promise<void>
   subscribe(callback: (status: EngineStatus) => void): () => void

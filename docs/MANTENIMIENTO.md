@@ -89,7 +89,13 @@ No hay auto-update silencioso. La actualización es manual y asistida.
 
 ### 1. Averiguar la versión oficial
 
-Puedes mirar las releases/tags de:
+Primero puedes ejecutar la comprobación manual de solo lectura:
+
+```bash
+npm run updates:check
+```
+
+No descarga ni instala nada. También puedes mirar las releases/tags de:
 
 ```text
 https://github.com/deepseek-ai/deepseek-harness

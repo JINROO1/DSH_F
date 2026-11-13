@@ -29,6 +29,6 @@ export default defineConfig({
     url: 'http://127.0.0.1:3100/__desktop/health',
     reuseExistingServer: false,
     timeout: 180_000,
-    env: { ...process.env, DSH_TELEMETRY_DISABLED: '1' },
+    env: { ...process.env, DSH_TELEMETRY_DISABLED: '1', DSH_UPDATE_CHECK_OFFLINE: '1' },
   },
 })

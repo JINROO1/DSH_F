@@ -19,6 +19,7 @@
     restartEngine: () => command('engine:restart'),
     stopEngine: () => command('engine:stop'),
     getDiagnostics: () => command('diagnostics:get'),
+    checkUpdates: () => command('updates:check'),
     exportDiagnostics: async () => {
       const anchor = document.createElement('a')
       anchor.href = '/__desktop/export'

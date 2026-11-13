@@ -30,6 +30,13 @@ DSH_F asume que el contenido de proyectos, plugins y respuestas de modelo puede 
 - Auto-restart acotado a 3 intentos con backoff exponencial.
 - `single-instance-lock`; cierre a bandeja opcional y confirmación de salida.
 
+## Comprobación manual de actualizaciones
+
+- Solo bajo acción explícita (`updates:check` o botón en Ajustes); sin sondeo en segundo plano por defecto.
+- Hosts: `api.github.com` y `registry.npmjs.org`; timeout 8 s; sin tokens/cookies/identificadores de usuario.
+- El renderer no ejecuta comandos ni recibe URLs arbitrarias: el comando Zod `updates:check` devuelve un resultado tipado.
+- No descarga, no instala y no modifica `runtime/upstream.json`; la actualización sigue requiriendo `upstream:prepare`, `qualify:runtime` y revisión humana.
+
 ## Overrides de dependencias
 
 `runtime/package.json` fija overrides para advisories conocidos del árbol upstream. Cualquier actualización del motor debe re-ejecutar:

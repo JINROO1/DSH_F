@@ -13,6 +13,7 @@ const api: DesktopApi = {
   stopEngine: () => invoke('engine:stop') as ReturnType<DesktopApi['stopEngine']>,
   getDiagnostics: () => invoke('diagnostics:get') as ReturnType<DesktopApi['getDiagnostics']>,
   exportDiagnostics: () => invoke('diagnostics:export') as ReturnType<DesktopApi['exportDiagnostics']>,
+  checkUpdates: () => invoke('updates:check') as ReturnType<DesktopApi['checkUpdates']>,
   openExternal: destination => invoke('external:open', { destination }) as Promise<void>,
   windowAction: action => invoke('window:action', { action }) as Promise<void>,
   subscribe: callback => {

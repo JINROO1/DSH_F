@@ -19,6 +19,7 @@ describe('shared contracts', () => {
       { channel: 'engine:stop' },
       { channel: 'diagnostics:get' },
       { channel: 'diagnostics:export' },
+      { channel: 'updates:check' },
       { channel: 'external:open', payload: { destination: 'documentation' } },
       { channel: 'window:action', payload: { action: 'close' } },
     ]

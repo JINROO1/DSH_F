@@ -92,6 +92,7 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 | `npm run check` | Typecheck + cobertura + build + integración + E2E. |
 | `npm run audit:dependencies` | `npm audit --omit=dev` en raíz y runtime. |
 | `npm run upstream:prepare` | Prepara una actualización del motor: pin, lockfile, referencias y auditoría. |
+| `npm run updates:check` | Comprobación manual de solo lectura: release DSH_F y tags npm del motor; no instala nada. |
 | `npm run qualify:runtime` | Auditoría + `check` con motor real; requisito previo para empaquetar. |
 | `npm run package:runtime` | Prepara runtime fuera de `app.asar` con manifiesto SHA-256 y cualificación vigente. |
 | `npm run package:fedora` | RPM x64 con electron-builder. |
@@ -120,6 +121,7 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 - [Accesibilidad y evidencia de la Fase 1](docs/ACCESIBILIDAD.md)
 - [Onboarding y diagnóstico amigable](docs/ONBOARDING.md)
 - [Investigación upstream](docs/UPSTREAM.md)
+- [Actualizaciones manuales asistidas](docs/UPDATES.md)
 - [Seguridad](docs/SECURITY.md)
 - [Pruebas](docs/TESTING.md)
 - [Fedora KDE](docs/FEDORA.md)

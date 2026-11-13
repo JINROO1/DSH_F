@@ -8,7 +8,7 @@ export default defineConfig({
     hookTimeout: 15_000,
     coverage: {
       provider: 'v8',
-      include: ['src/main/{bridge,settings,log,runtime,security,diagnostics,autostart}.ts', 'src/shared/**/*.ts'],
+      include: ['src/main/{bridge,settings,log,runtime,security,diagnostics,autostart,updates}.ts', 'src/shared/**/*.ts'],
       reporter: ['text', 'html', 'json-summary'],
       thresholds: { lines: 80, functions: 80, statements: 80, branches: 70 },
     },

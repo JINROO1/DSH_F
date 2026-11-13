@@ -5,7 +5,7 @@ import { join, resolve, relative, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { Readable } from 'node:stream'
 import { pipeline } from 'node:stream/promises'
-import { HarnessRuntime, DesktopStore, DiagnosticLog, collectDiagnostics, diagnosticsText, commandSchema, APP_ORIGIN, errorMessage } from '../dist/preview-core.js'
+import { HarnessRuntime, DesktopStore, DiagnosticLog, collectDiagnostics, diagnosticsText, checkForUpdates, commandSchema, APP_ORIGIN, errorMessage } from '../dist/preview-core.js'
 
 const root = fileURLToPath(new URL('..', import.meta.url))
 const portIndex = process.argv.indexOf('--port')
@@ -53,6 +53,11 @@ async function command(input) {
     case 'engine:stop': await runtime.stop(); return safeStatus()
     case 'diagnostics:get': return collectDiagnostics({ appVersion: '0.1.0-preview', engine: safeStatus(), logPath: join(preview, 'logs/desktop.log') })
     case 'diagnostics:export': return diagnosticsText(await command({ channel: 'diagnostics:get' }))
+    case 'updates:check': return checkForUpdates({
+      appVersion: '0.1.0-preview',
+      upstreamVersion: runtime.status().version,
+      ...(process.env.DSH_UPDATE_CHECK_OFFLINE === '1' ? { fetchImpl: async () => { throw new Error('Comprobación sin red (modo de prueba)') } } : {}),
+    })
     case 'external:open': case 'window:action': return null
   }
 }

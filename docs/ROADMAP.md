@@ -35,7 +35,7 @@ Tamaños orientativos: **S** = cambio localizado, **M** = varios archivos/prueba
 | 0 | Plan, mantenimiento y trazabilidad | Alta | Hecho | — |
 | 1 | Accesibilidad y confianza visual | Alta | En curso: automatización completa, 1.8 manual bloqueada | 0 |
 | 2 | Onboarding y diagnóstico amigable | Alta | Hecho | 1 |
-| 3 | Actualizaciones manuales asistidas | Alta | Pendiente | 1; flujo upstream existente |
+| 3 | Actualizaciones manuales asistidas | Alta | Hecho | 1; flujo upstream existente |
 | 4 | Fedora/KDE y distribución profesional | Media/alta | Pendiente | 1–3; hardware Fedora |
 | 5 | Seguridad y cadena de suministro | Media/alta | Pendiente | 3–4 para distribución firmada |
 | 6 | Productividad diaria | Media | Pendiente | 2 |
@@ -101,14 +101,14 @@ Dependencias: Fase 1 para que los nuevos componentes nazcan accesibles. No depen
 
 Objetivo: descubrir versiones nuevas sin instalar nada automáticamente.
 
-| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño |
-|---|---|---|---|---|
-| 3.1 | Contrato de comprobación | Diseñar respuesta tipada para versión actual/disponible/error/fecha | Sin tokens; timeout; fallos de red no rompen la app; sin ejecución de comandos desde renderer | M |
-| 3.2 | Comprobación manual CLI | Script que consulte release de DSH_F y versión/tag oficial del motor | Solo lectura; distingue app/motor; no usa latest a ciegas; salida comprensible | S |
-| 3.3 | Aviso en la app | Botón “Comprobar actualizaciones” y resultado no modal | No descarga/instala; enlace HTTPS verificado; ofrece comandos/documentación | M |
-| 3.4 | Privacidad y frecuencia | Sin comprobación en segundo plano por defecto | La acción es explícita; documentar qué hosts se consultan; sin identificadores de usuario | S |
-| 3.5 | Pruebas offline/errores | Simular respuesta válida, 404, timeout, JSON inválido y versión menor | E2E/unitarios verdes; nunca se modifica el pin desde la UI | M |
-| 3.6 | Guía de actualización | Conectar aviso con upstream:prepare → ci → qualify → package | Documentación coincide con scripts reales; no promete auto-update | S |
+| ID | Subfase | Trabajo | Criterios de aceptación | Tamaño | Estado |
+|---|---|---|---|---|---|
+| 3.1 | Contrato de comprobación | Diseñar respuesta tipada para versión actual/disponible/error/fecha | Sin tokens; timeout; fallos de red no rompen la app; sin ejecución de comandos desde renderer | M | Hecho |
+| 3.2 | Comprobación manual CLI | Script que consulte release de DSH_F y versión/tag oficial del motor | Solo lectura; distingue app/motor; no usa latest a ciegas; salida comprensible | S | Hecho |
+| 3.3 | Aviso en la app | Botón “Comprobar actualizaciones” y resultado no modal | No descarga/instala; enlace HTTPS verificado; ofrece comandos/documentación | M | Hecho |
+| 3.4 | Privacidad y frecuencia | Sin comprobación en segundo plano por defecto | La acción es explícita; documentar qué hosts se consultan; sin identificadores de usuario | S | Hecho |
+| 3.5 | Pruebas offline/errores | Simular respuesta válida, 404, timeout, JSON inválido y versión menor | E2E/unitarios verdes; nunca se modifica el pin desde la UI | M | Hecho |
+| 3.6 | Guía de actualización | Conectar aviso con upstream:prepare → ci → qualify → package | Documentación coincide con scripts reales; no promete auto-update | S | Hecho |
 
 Dependencias: flujo `runtime/upstream.json` y `qualify:runtime` ya existentes. La UI nunca debe saltarse la puerta de empaquetado.
 
@@ -175,7 +175,8 @@ Objetivo: que otra persona pueda contribuir sin depender del mantenedor original
 | 2026-11-12 | 1.1 | Línea base axe en claro/oscuro | `docs/ACCESIBILIDAD.md` y `docs/accessibility/baseline-2026-11-12.json`: 6 violaciones de contraste en vistas claras, 1 en paleta clara; oscuro sin violaciones en la matriz inicial |
 | 2026-11-12 | 1.2–1.7 | Paleta clara accesible, semántica/foco, matriz axe, capturas y cualificación | `docs/ACCESIBILIDAD.md`: 12/12 axe, 20 tests de contraste, 90/90 unitarias, 3/3 integración, 22/22 E2E, auditoría 0+0; `qualify:runtime` 23:07:59 UTC |
 | 2026-11-12 | 2 | Onboarding descartable, credenciales/permisos, recuperación y logs filtrables | `docs/ONBOARDING.md`; typecheck/cobertura/build/integración verdes, 92/92 unitarias, 24/24 E2E |
+| 2026-11-13 | 3 | Comprobación manual de actualizaciones en CLI/app, privacidad y pruebas offline | `docs/UPDATES.md`; `npm run check` verde: 97/97 unitarias, 3/3 integración, 25/25 E2E |
 
 ## Próximo paso inmediato
 
-Continuar con **Fase 3, actualizaciones manuales asistidas**. Mantener 1.8 bloqueada hasta Fedora/Plasma real; no mezclar una actualización real del motor con estos cambios ni publicar releases sin CI verde.
+Continuar con **Fase 4, Fedora/KDE y distribución profesional**, dejando bloqueado lo que requiera hardware Fedora/Plasma real o decisiones de distribución. No publicar releases ni firmar artefactos sin revisión humana y CI verde.

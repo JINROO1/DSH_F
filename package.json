@@ -25,6 +25,7 @@
     "package:fedora": "npm run package:runtime && electron-builder --linux rpm --x64",
     "audit:dependencies": "npm audit --omit=dev && npm --prefix runtime audit --omit=dev",
     "upstream:prepare": "node scripts/prepare-upstream.mjs",
+    "updates:check": "npm run build && node scripts/check-updates.mjs",
     "qualify:runtime": "node scripts/qualify-runtime.mjs",
     "source:archive": "node scripts/source-archive.mjs"
   },

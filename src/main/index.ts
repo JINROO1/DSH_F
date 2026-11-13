@@ -8,6 +8,7 @@ import { DesktopStore } from './settings.js'
 import { DiagnosticLog, redact } from './log.js'
 import { HarnessRuntime } from './runtime.js'
 import { collectDiagnostics, diagnosticsText } from './diagnostics.js'
+import { checkForUpdates } from './updates.js'
 import { validAppSender, validateExternalUrl, allowedPermission, allowedNavigation } from './security.js'
 import { setAutostart } from './autostart.js'
 
@@ -85,6 +86,7 @@ function installIpc(): void {
         await writeFile(result.filePath, diagnosticsText(diagnostics), { mode: 0o600 })
         return result.filePath
       }
+      case 'updates:check': return checkForUpdates({ appVersion: app.getVersion(), upstreamVersion: runtime!.status().version })
       case 'external:open': await shell.openExternal(validateExternalUrl(EXTERNAL_LINKS[command.payload.destination]).href); return
       case 'window:action': {
         if (command.payload.action === 'minimize') window!.minimize()

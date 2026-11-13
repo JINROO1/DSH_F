@@ -19,6 +19,7 @@ extraResources:
   - from: docs/UPSTREAM.md
     to: UPSTREAM.md
 linux:
+  maintainer: JINROO1 <JINROO1@users.noreply.github.com>
   category: Development
   synopsis: DeepSeek Harness para Fedora KDE Plasma
   description: Edición comunitaria de escritorio con motor oficial, interfaz en español y proceso local aislado.

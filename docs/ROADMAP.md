@@ -123,7 +123,7 @@ Objetivo: pasar de “RPM construido” a “RPM actualizable y verificable en F
 | 4.3 | Notificaciones nativas | Motor listo/error y avisos opcionales | Se pueden silenciar; no filtran rutas/secretos; funcionan sin telemetry | M | Hecho: preferencia, avisos genéricos y tests; validación nativa en 4.1 |
 | 4.4 | Actualización RPM | Instalar versión anterior, crear datos, instalar nueva | Conserva userData/DSH_HOME/proyectos; rollback documentado | M | Bloqueado: requiere RPM previo/Fedora real; checklist en `docs/FEDORA.md` |
 | 4.5 | Repositorio de paquetes | Investigar COPR vs repo propio | ADR con costes, firmas, mantenimiento y decisión; no publicar repo experimental como estable | L | Hecho: ADR 0001; publicación/COPR pendiente de cuentas y firma |
-| 4.6 | Publicación verificable | Checksums, instrucciones de verificación y proceso de firma | Release reproducible en CI; claves fuera del repo; documentación de rotación/revocación | L | En curso: SHA256SUMS en CI y verificación documentada; firma bloqueada |
+| 4.6 | Publicación verificable | Checksums, instrucciones de verificación y proceso de firma | Release reproducible en CI; claves fuera del repo; documentación de rotación/revocación | L | En curso: SHA256SUMS/SBOM/licencias en CI verde (run 43470309423); firma bloqueada |
 
 Bloqueo externo: hardware Fedora/Plasma y decisiones/cuentas de distribución. No marcar Hecho solo porque un contenedor Fedora instaló el RPM.
 
@@ -180,6 +180,7 @@ Objetivo: que otra persona pueda contribuir sin depender del mantenedor original
 | 2026-11-13 | 5 | SBOM, licencias estrictas, ADRs de permisos/llavero y revisión de fronteras | `docs/SUPPLY-CHAIN.md`; 677 componentes objetivo, 0 licencias desconocidas; `npm run check` verde: 101/101 unitarias, 3/3 integración, 26/26 E2E |
 | 2026-11-13 | 6 | Paleta ampliada, favoritos/alias/rutas rotas, plantillas, backup de preferencias, es/en y línea base de rendimiento | `docs/PRODUCTIVITY.md`, `docs/PERFORMANCE.md`; `npm run check` verde: 110/110 unitarias, 3/3 integración, 30/30 E2E; baseline 3 runs con WebSocket |
 | 2026-11-13 | 7 | CONTRIBUTING, plantillas issue/PR, ADRs, checklist de release y triaje mensual | `CONTRIBUTING.md`, `.github/ISSUE_TEMPLATE/`, `docs/adr/README.md`, `docs/RELEASE-CHECKLIST.md`, `docs/TRIAGE.md`; `qualify:runtime` 2026-11-13T01:00:01.572Z: auditoría 0+0, 110/110 unitarias, 3/3 integración, 30/30 E2E |
+| 2026-11-13 | CI | Reparación de la cadena CI: Ubuntu 24.04, Playwright con deps, puerta separada, rutas preview relativas, smoke Electron, `--publish never` y maintainer RPM | CI run 43470309423 verde: verify 6m37s (auditoría/typecheck/cobertura/build/integración/E2E/cualificación/smoke/RPM/checksums/SBOM/licencias), fedora-install 53s; `docs/TRIAGE.md` |
 
 ## Próximo paso inmediato
 

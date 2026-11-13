@@ -17,8 +17,7 @@ Rutina para que el proyecto no dependa del mantenedor original ni de una convers
 | Fecha | Hallazgos | Acción | Evidencia |
 |---|---|---|---|
 | 2026-11-13 | Fases 0–6 completas en lo automatizable; Fase 7 comunidad establecida. Auditoría 0+0. Upstream npm: alpha=0.2.2-alpha.3, next=0.2.2-rc.2, latest=0.2.2-rc.1; GitHub releases no alcanzable desde sandbox (`fetch failed`), sin actualización marcada. | Mantener pin 0.2.2-rc.2. Bloqueos externos siguen abiertos. Cualificación refrescada tras Fase 6. | `qualify:runtime` 2026-11-13T01:00:01.572Z: 110/110 unitarias, 3/3 integración, 30/30 E2E; `updates:check` 2026-11-13T00:56:44.349Z |
-
-| 2026-11-13 | CI GitHub Actions fallaba: `ubuntu-latest`/Ubuntu 26 rompía instalación de Chromium y el paso único de cualificación ocultaba el fallo. | Fijar `ubuntu-24.04`, `playwright install --with-deps chromium` y separar auditoría/typecheck/cobertura/build/integración/E2E; registrar cualificación con `--record-only` solo en CI. | Commits `7625bef`, `45222e8`; runs 43340760543, 43341854538, 43464142298 |
+| 2026-11-13 | CI GitHub Actions fallaba en cadena: Chromium/Ubuntu 26, puerta de cualificación opaca, rutas de vista previa absolutas, smoke Electron al cerrar, publicación implícita y maintainer RPM ausente. | `ubuntu-24.04` + `--with-deps`; pasos separados y `--record-only` solo en CI; rutas `.preview` relativas; cierre smoke asíncrono; `--publish never`; maintainer Linux noreply. | CI run 43470309423 verde: verify 6m37s, fedora-install 53s; commits `7625bef`…`eac2aa5` |
 
 ## Bloqueos vigentes
 

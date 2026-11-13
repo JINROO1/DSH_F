@@ -146,6 +146,7 @@ La vista previa levanta el mismo runtime, puente y renderer en `http://0.0.0.0:3
 | E2E Chromium + axe | ✅ 30 tests; matriz axe claro/oscuro, teclado/foco, paridad shell/agente, diagnóstico, productividad y responsive |
 | Auditoría dependencias | ✅ 0 vulnerabilidades en raíz y runtime (overrides documentados) |
 | Cualificación runtime | ✅ 2026-11-13T01:00:01.572Z: auditoría + typecheck/cobertura/build/integración/E2E |
+| CI Fedora Edition | ✅ run 43470309423: verify + smoke Electron + RPM/checksums/SBOM/licencias + instalación en `fedora:latest` |
 | Smoke Electron / RPM Fedora | 🔁 CI (`.github/workflows/ci.yml`); requiere binario Electron y Fedora/Plasma real |
 
 ## Licencia

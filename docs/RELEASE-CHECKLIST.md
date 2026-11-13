@@ -44,6 +44,8 @@ El workflow `.github/workflows/ci.yml` debe pasar:
 - [ ] `fedora-install`: instalación en `fedora:latest`, `desktop-file-validate`, ejecutable y `ldd` sin `not found`.
 - [ ] Artefacto `dsh-fedora-rpm` contiene RPM, `SHA256SUMS`, `sbom.json`, `LICENSES.json`.
 
+El empaquetado usa `--publish never`; solo el job `release` publica assets cuando el tag `v*` pasó `verify` y `fedora-install`.
+
 ## 3. Notas de release
 
 Incluye:

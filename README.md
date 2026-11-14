@@ -52,7 +52,7 @@ Descarga la última versión desde [**Releases**](https://github.com/JINROO1/DSH
 
 ```bash
 sha256sum -c SHA256SUMS
-sudo dnf install -y ./dsh-fedora-0.1.1-x86_64.rpm
+sudo dnf install -y ./dsh-fedora-0.1.2-x86_64.rpm
 ```
 
 El RPM no está firmado criptográficamente (ver [SUPPLY-CHAIN.md](docs/SUPPLY-CHAIN.md)); la verificación disponible es SHA-256 y la procedencia del CI. Notas de la versión actual: [v0.1.0](docs/releases/v0.1.0.md).
@@ -66,7 +66,7 @@ npm ci
 npm --prefix runtime ci
 npm run qualify:runtime
 npm run package:fedora
-sudo dnf install -y release/dsh-fedora-0.1.1-x86_64.rpm
+sudo dnf install -y release/dsh-fedora-0.1.2-x86_64.rpm
 ```
 
 Guía completa: [docs/FEDORA.md](docs/FEDORA.md).

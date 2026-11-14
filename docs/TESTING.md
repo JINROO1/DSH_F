@@ -34,7 +34,7 @@ npx playwright install chromium
 npm run qualify:runtime
 xvfb-run -a npm run test:electron
 npm run package:fedora
-sudo dnf install -y release/dsh-fedora-0.1.1-x86_64.rpm
+sudo dnf install -y release/dsh-fedora-0.1.2-x86_64.rpm
 ```
 
 ## Entorno de desarrollo sin KDE

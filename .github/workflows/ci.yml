@@ -77,7 +77,7 @@ jobs:
       - name: Verificar motor incluido en el RPM
         run: |
           rpm -qpl release/*.rpm > rpm-files.txt
-          for pattern in '/runtime/node_modules/node-linux-x64/bin/node$' '/runtime/node_modules/@deepseek-ai/dsh/lib/bin.js$' '/runtime/runtime-manifest.json$'; do
+          for pattern in '/runtime/node_modules/node-linux-x64/bin/node$' '/runtime/node_modules/@deepseek-ai/dsh/lib/bin.js$' '/runtime/runtime-manifest.json$' '/resources/lifecycle-guard.mjs$'; do
             if ! grep -qE "$pattern" rpm-files.txt; then
               RT="$(grep -i runtime rpm-files.txt | head -n 25 | tr '\n' '|')"
               LOG="$(grep -iE 'runtime|extraResources|skipped' electron-builder.log | head -n 25 | tr '\n' '|')"

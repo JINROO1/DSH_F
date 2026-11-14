@@ -178,7 +178,9 @@ async function main(): Promise<void> {
   const state = await store.load()
   nativeTheme.themeSource = state.settings.theme
   const runtimeRoot = app.isPackaged ? join(process.resourcesPath, 'runtime') : join(directory, '../runtime')
-  runtime = new HarnessRuntime({ runtimeRoot, home: join(userData, 'harness'), userData, appOrigins: [APP_ORIGIN], log, themeCssPath: join(directory, 'renderer/harness-theme.css'), fontRoot: join(directory, 'renderer/fonts') }, state.settings)
+  // El guard lo ejecuta el Node del motor, que no puede leer app.asar: en paquetes va como recurso fuera del asar.
+  const guardPath = app.isPackaged ? { guardPath: join(process.resourcesPath, 'lifecycle-guard.mjs') } : {}
+  runtime = new HarnessRuntime({ runtimeRoot, home: join(userData, 'harness'), userData, appOrigins: [APP_ORIGIN], log, themeCssPath: join(directory, 'renderer/harness-theme.css'), fontRoot: join(directory, 'renderer/fonts'), ...guardPath }, state.settings)
   runtime.on('status', broadcast)
   session.defaultSession.setPermissionRequestHandler((_contents, permission, callback, details) => callback(allowedPermission(permission, details.requestingUrl, runtime?.bridgeOrigin)))
   session.defaultSession.setPermissionCheckHandler((_contents, permission, origin, details) => allowedPermission(permission, details.requestingUrl ?? origin, runtime?.bridgeOrigin))

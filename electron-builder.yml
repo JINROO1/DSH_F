@@ -21,6 +21,9 @@ extraResources:
     to: runtime
     filter:
       - '*.json'
+  # Proceso hijo del motor (Node, no Electron): no puede leer app.asar.
+  - from: dist/lifecycle-guard.mjs
+    to: lifecycle-guard.mjs
   - from: docs/UPSTREAM.md
     to: UPSTREAM.md
 linux:
